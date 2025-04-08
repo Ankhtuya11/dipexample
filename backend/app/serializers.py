@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PlantInfo, UserPlant
+from .models import PlantInfo, UserPlant, Category
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
@@ -27,9 +27,27 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class PlantInfoSerializer(serializers.ModelSerializer):
+    category_id = serializers.IntegerField(write_only=True)  # Allow category_id to be passed as an integer
+
     class Meta:
         model = PlantInfo
         fields = '__all__'
+
+    def create(self, validated_data):
+        # If category_id is passed, link the category
+        category_id = validated_data.pop('category_id', None)
+        if category_id:
+            category = Category.objects.get(id=category_id)
+            validated_data['category'] = category
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        category_id = validated_data.pop('category_id', None)
+        if category_id:
+            category = Category.objects.get(id=category_id)
+            instance.category = category
+        return super().update(instance, validated_data)
+
 
 class UserPlantSerializer(serializers.ModelSerializer):
     plant = PlantInfoSerializer(read_only=True)  # Ургамлын дэлгэрэнгүйг харуулна
@@ -46,3 +64,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']  # Assuming Category has 'id' and 'name' fields

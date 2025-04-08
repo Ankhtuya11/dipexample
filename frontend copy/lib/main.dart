@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
   final List<Widget> _screens = [
     HomePage(),
     MyPlantsScreen(),
-    AddPlantScreen(),
+    AddPlantPage(),
     LoginScreen(),
     RegisterScreen(),
   ];
