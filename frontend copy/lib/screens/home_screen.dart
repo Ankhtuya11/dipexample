@@ -4,10 +4,9 @@ import 'package:frontend/components/featured_slider.dart';
 import 'package:frontend/components/popular_section.dart';
 import 'package:frontend/components/search_bar.dart';
 import 'package:frontend/services.dart';
-
+import 'package:http/http.dart' as http;
 import '../constants.dart';
-
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,58 +21,70 @@ class _HomePageState extends State<HomePage> {
 
   PageController controller = PageController(viewportFraction: 0.6);
 
-  List<Map<String, dynamic>> categories = [
-    {'id': 1, 'name': 'All Plants'},
-    {'id': 2, 'name': 'House Plants'},
-    {'id': 3, 'name': 'Office Plants'},
-    {'id': 4, 'name': 'Backyard Plants'},
-  ];
-
-  List<Map<String, dynamic>> allPlants = [
-    {
-      'id': 1,
-      'name': 'Snake Plant',
-      'image': 'assets/images/image1.jpg',
-      'category_id': 2, // House
-    },
-    {
-      'id': 2,
-      'name': 'Peace Lily',
-      'image': 'assets/images/image2.jpg',
-      'category_id': 2, // House
-    },
-    {
-      'id': 3,
-      'name': 'Cactus',
-      'image': 'assets/images/image3.jpg',
-      'category_id': 3, // Office
-    },
-    {
-      'id': 4,
-      'name': 'Rose',
-      'image': 'assets/images/image5.jpg',
-      'category_id': 4, // Backyard
-    },
-  ];
-
+  List<Map<String, dynamic>> categories = [];
   List<Map<String, dynamic>> plants = [];
 
   @override
   void initState() {
     super.initState();
-    selectedCategoryId = categories[0]['id']; // default to All Plants
-    filterPlants();
+    fetchCategories().then((fetchedCategories) {
+      setState(() {
+        categories = fetchedCategories;
+        selectedCategoryId = categories.isNotEmpty ? categories[0]['id'] : null;
+      });
+      fetchPlants().then((fetchedPlants) {
+        setState(() {
+          plants = fetchedPlants;
+          filterPlants(); // Ensure plants are filtered once categories are loaded
+        });
+      });
+    });
   }
 
   void filterPlants() {
+    if (selectedCategoryId == null) return;
+
     if (selectedCategoryId == 1) {
-      plants = allPlants;
+      // If category is 1, show all plants
     } else {
-      plants = allPlants
-          .where((plant) => plant['category_id'] == selectedCategoryId)
-          .toList();
+      plants =
+          plants
+              .where((plant) => plant['category_id'] == selectedCategoryId)
+              .toList();
     }
     setState(() {});
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchCategories() async {
+    final response = await http.get(
+      Uri.parse('http://127.0.0.1:8000/api/categories/'),
+    );
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      return List<Map<String, dynamic>>.from(
+        data.map((item) => item as Map<String, dynamic>),
+      );
+    } else {
+      throw Exception('Failed to load categories');
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchPlants() async {
+    final response = await http.get(
+      Uri.parse('http://127.0.0.1:8000/api/plants/'),
+    );
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      return List<Map<String, dynamic>>.from(
+        data.map((item) => item as Map<String, dynamic>),
+      );
+    } else {
+      throw Exception('Failed to load plants');
+    }
   }
 
   @override
@@ -87,8 +98,8 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset(
             'assets/icons/menu.png',
-            errorBuilder: (context, error, stackTrace) =>
-                const Icon(Icons.menu),
+            errorBuilder:
+                (context, error, stackTrace) => const Icon(Icons.menu),
           ),
         ),
         actions: [
@@ -108,8 +119,9 @@ class _HomePageState extends State<HomePage> {
               child: Image.asset(
                 'assets/images/pro.png',
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.person, color: Colors.white),
+                errorBuilder:
+                    (context, error, stackTrace) =>
+                        const Icon(Icons.person, color: Colors.white),
               ),
             ),
           ),
@@ -119,31 +131,36 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             SearchBarComponent(),
-            CategoryTabs(
-              categories: categories,
-              selectedCategoryId: selectedCategoryId!,
-              onCategorySelected: (categoryId) {
-                setState(() {
-                  selectedCategoryId = categoryId;
-                  filterPlants();
-                });
-              },
-            ),
+            categories.isEmpty
+                ? const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(child: Text("No categories found.")),
+                )
+                : CategoryTabs(
+                  categories: categories,
+                  selectedCategoryId: selectedCategoryId!,
+                  onCategorySelected: (categoryId) {
+                    setState(() {
+                      selectedCategoryId = categoryId;
+                      filterPlants();
+                    });
+                  },
+                ),
             plants.isEmpty
                 ? const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Center(child: Text("No plants found.")),
-                  )
+                  padding: EdgeInsets.all(20),
+                  child: Center(child: Text("No plants found.")),
+                )
                 : FeaturedSlider(
-                    plants: plants,
-                    controller: controller,
-                    activePage: activePage,
-                    onPageChanged: (val) {
-                      setState(() {
-                        activePage = val;
-                      });
-                    },
-                  ),
+                  plants: plants,
+                  controller: controller,
+                  activePage: activePage,
+                  onPageChanged: (val) {
+                    setState(() {
+                      activePage = val;
+                    });
+                  },
+                ),
             if (plants.isNotEmpty) PopularSection(plants: plants),
           ],
         ),

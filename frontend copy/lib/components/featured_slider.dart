@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert'; // For base64Decode
 import '../constants.dart';
 
 class FeaturedSlider extends StatelessWidget {
@@ -26,6 +27,17 @@ class FeaturedSlider extends StatelessWidget {
         onPageChanged: onPageChanged,
         itemBuilder: (_, index) {
           final plant = plants[index];
+          String? imageBase64 =
+              plant['image_base64']; // Check if image_base64 exists
+
+          // If the image contains the data:image/png;base64, prefix, remove it
+          if (imageBase64 != null && imageBase64.isNotEmpty) {
+            imageBase64 = imageBase64.replaceAll(
+              RegExp(r"^data:image\/[a-zA-Z]+;base64,"),
+              "",
+            );
+          }
+
           return AnimatedContainer(
             duration: const Duration(milliseconds: 500),
             margin: EdgeInsets.only(
@@ -47,11 +59,18 @@ class FeaturedSlider extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(28),
-                    child: Image.asset(
-                      plant['image'],
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
+                    child:
+                        imageBase64 != null && imageBase64.isNotEmpty
+                            ? Image.memory(
+                              base64Decode(imageBase64), // Decode base64 image
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            )
+                            : Image.asset(
+                              'assets/images/default_image.png', // Default image if base64 is not available
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
                   ),
                   Positioned(
                     right: 12,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert'; // For base64Decode
 import '../constants.dart';
 
 class PopularSection extends StatelessWidget {
@@ -23,8 +24,9 @@ class PopularSection extends StatelessWidget {
                 'assets/icons/more.png',
                 color: green,
                 height: 20,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.more_horiz, color: green),
+                errorBuilder:
+                    (context, error, stackTrace) =>
+                        const Icon(Icons.more_horiz, color: green),
               ),
             ],
           ),
@@ -36,6 +38,17 @@ class PopularSection extends StatelessWidget {
               itemCount: plants.length,
               itemBuilder: (_, index) {
                 final plant = plants[index];
+                String? imageBase64 =
+                    plant['image_base64']; // Assuming image is base64
+
+                // If the image contains the data:image/png;base64, prefix, remove it
+                if (imageBase64 != null && imageBase64.isNotEmpty) {
+                  imageBase64 = imageBase64.replaceAll(
+                    RegExp(r"^data:image\/[a-zA-Z]+;base64,"),
+                    "",
+                  );
+                }
+
                 return Container(
                   width: 200,
                   margin: const EdgeInsets.only(left: 20, right: 10),
@@ -51,19 +64,30 @@ class PopularSection extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          plant['image'],
-                          width: 70,
-                          height: 70,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                            width: 70,
-                            height: 70,
-                            color: Colors.green.shade100,
-                            child: const Icon(Icons.local_florist),
-                          ),
-                        ),
+                        child:
+                            imageBase64 != null && imageBase64.isNotEmpty
+                                ? Image.memory(
+                                  base64Decode(
+                                    imageBase64,
+                                  ), // Decode base64 image
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.cover,
+                                )
+                                : Image.asset(
+                                  plant['image'] ??
+                                      'assets/images/default_image.png', // Default image if base64 is not available
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (context, error, stackTrace) => Container(
+                                        width: 70,
+                                        height: 70,
+                                        color: Colors.green.shade100,
+                                        child: const Icon(Icons.local_florist),
+                                      ),
+                                ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
@@ -84,12 +108,12 @@ class PopularSection extends StatelessWidget {
                           'assets/icons/add.png',
                           color: white,
                           height: 15,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 15,
-                          ),
+                          errorBuilder:
+                              (context, error, stackTrace) => const Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 15,
+                              ),
                         ),
                       ),
                     ],
