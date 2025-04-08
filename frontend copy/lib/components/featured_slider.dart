@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:convert'; // For base64Decode
+import 'package:carousel_slider/carousel_slider.dart'; // Import carousel_slider
 import '../constants.dart';
 
 class FeaturedSlider extends StatelessWidget {
   final List<Map<String, dynamic>> plants;
-  final PageController controller;
   final int activePage;
   final Function(int) onPageChanged;
 
   const FeaturedSlider({
     required this.plants,
-    required this.controller,
     required this.activePage,
     required this.onPageChanged,
     super.key,
@@ -20,15 +19,11 @@ class FeaturedSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 320,
-      child: PageView.builder(
-        controller: controller,
+      child: CarouselSlider.builder(
         itemCount: plants.length,
-        padEnds: false,
-        onPageChanged: onPageChanged,
-        itemBuilder: (_, index) {
+        itemBuilder: (_, index, realIndex) {
           final plant = plants[index];
-          String? imageBase64 =
-              plant['image_base64']; // Check if image_base64 exists
+          String? imageBase64 = plant['image_base64'];
 
           // If the image contains the data:image/png;base64, prefix, remove it
           if (imageBase64 != null && imageBase64.isNotEmpty) {
@@ -90,6 +85,15 @@ class FeaturedSlider extends StatelessWidget {
             ),
           );
         },
+        options: CarouselOptions(
+          height: 320.0,
+          initialPage: activePage,
+          enableInfiniteScroll: plants.length > 1,
+          autoPlay: true, // Auto-scroll
+          onPageChanged: (index, reason) {
+            onPageChanged(index);
+          },
+        ),
       ),
     );
   }

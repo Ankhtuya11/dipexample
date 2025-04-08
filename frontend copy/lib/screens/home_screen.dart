@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
 
   List<Map<String, dynamic>> categories = [];
   List<Map<String, dynamic>> plants = [];
-
+  List<Map<String, dynamic>> allPlants = [];
   @override
   void initState() {
     super.initState();
@@ -34,22 +34,20 @@ class _HomePageState extends State<HomePage> {
       });
       fetchPlants().then((fetchedPlants) {
         setState(() {
-          plants = fetchedPlants;
-          filterPlants(); // Ensure plants are filtered once categories are loaded
+          allPlants = fetchedPlants;
+          filterPlants(); // Always filter based on selectedCategoryId
         });
       });
     });
   }
 
   void filterPlants() {
-    if (selectedCategoryId == null) return;
-
-    if (selectedCategoryId == 1) {
-      // If category is 1, show all plants
+    if (selectedCategoryId == null) {
+      plants = List<Map<String, dynamic>>.from(allPlants); // Show all
     } else {
       plants =
-          plants
-              .where((plant) => plant['category_id'] == selectedCategoryId)
+          allPlants
+              .where((plant) => plant['category'] == selectedCategoryId)
               .toList();
     }
     setState(() {});
@@ -153,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                 )
                 : FeaturedSlider(
                   plants: plants,
-                  controller: controller,
+                  // controller: controller,
                   activePage: activePage,
                   onPageChanged: (val) {
                     setState(() {
