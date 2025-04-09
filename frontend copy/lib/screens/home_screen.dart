@@ -3,7 +3,6 @@ import 'package:frontend/components/category_tabs.dart';
 import 'package:frontend/components/featured_slider.dart';
 import 'package:frontend/components/popular_section.dart';
 import 'package:frontend/components/search_bar.dart';
-import 'package:frontend/services.dart';
 import 'package:http/http.dart' as http;
 import '../constants.dart';
 import 'dart:convert';
@@ -18,32 +17,32 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int? selectedCategoryId;
   int activePage = 0;
-
-  PageController controller = PageController(viewportFraction: 0.6);
+  PageController controller = PageController(viewportFraction: 0.7);
 
   List<Map<String, dynamic>> categories = [];
   List<Map<String, dynamic>> plants = [];
   List<Map<String, dynamic>> allPlants = [];
+
   @override
   void initState() {
     super.initState();
     fetchCategories().then((fetchedCategories) {
       setState(() {
         categories = fetchedCategories;
-        selectedCategoryId = categories.isNotEmpty ? categories[0]['id'] : null;
+        selectedCategoryId = 0; // Default to "All"
       });
       fetchPlants().then((fetchedPlants) {
         setState(() {
           allPlants = fetchedPlants;
-          filterPlants(); // Always filter based on selectedCategoryId
+          filterPlants();
         });
       });
     });
   }
 
   void filterPlants() {
-    if (selectedCategoryId == null) {
-      plants = List<Map<String, dynamic>>.from(allPlants); // Show all
+    if (selectedCategoryId == 0 || selectedCategoryId == null) {
+      plants = List<Map<String, dynamic>>.from(allPlants);
     } else {
       plants =
           allPlants
@@ -57,13 +56,13 @@ class _HomePageState extends State<HomePage> {
     final response = await http.get(
       Uri.parse('http://127.0.0.1:8000/api/categories/'),
     );
-
     if (response.statusCode == 200) {
-      // Parse the JSON response
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-      return List<Map<String, dynamic>>.from(
+      List<Map<String, dynamic>> categoryList = List<Map<String, dynamic>>.from(
         data.map((item) => item as Map<String, dynamic>),
       );
+      categoryList.insert(0, {"id": 0, "name": "All"}); // 👈 Add "All"
+      return categoryList;
     } else {
       throw Exception('Failed to load categories');
     }
@@ -73,9 +72,7 @@ class _HomePageState extends State<HomePage> {
     final response = await http.get(
       Uri.parse('http://127.0.0.1:8000/api/plants/'),
     );
-
     if (response.statusCode == 200) {
-      // Parse the JSON response
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
       return List<Map<String, dynamic>>.from(
         data.map((item) => item as Map<String, dynamic>),
@@ -93,32 +90,31 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         backgroundColor: white,
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(10.0),
           child: Image.asset(
             'assets/icons/menu.png',
-            errorBuilder:
-                (context, error, stackTrace) => const Icon(Icons.menu),
+            errorBuilder: (context, error, _) => const Icon(Icons.menu),
           ),
         ),
         actions: [
           Container(
             height: 40,
             width: 40,
-            margin: const EdgeInsets.only(left: 0, right: 10),
+            margin: const EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
               color: green,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
-                BoxShadow(color: green.withOpacity(0.5), blurRadius: 10),
+                BoxShadow(color: green.withOpacity(0.4), blurRadius: 8),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               child: Image.asset(
                 'assets/images/pro.png',
                 fit: BoxFit.cover,
                 errorBuilder:
-                    (context, error, stackTrace) =>
+                    (_, __, ___) =>
                         const Icon(Icons.person, color: Colors.white),
               ),
             ),
@@ -126,40 +122,70 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 10),
+            Text(
+              "Hello 👋",
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "Find your favorite plants",
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 16),
             SearchBarComponent(),
-            categories.isEmpty
-                ? const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Center(child: Text("No categories found.")),
-                )
-                : CategoryTabs(
-                  categories: categories,
-                  selectedCategoryId: selectedCategoryId!,
-                  onCategorySelected: (categoryId) {
-                    setState(() {
-                      selectedCategoryId = categoryId;
-                      filterPlants();
-                    });
-                  },
+            const SizedBox(height: 20),
+
+            if (categories.isEmpty)
+              const Center(child: Text("No categories found."))
+            else
+              CategoryTabs(
+                categories: categories,
+                selectedCategoryId: selectedCategoryId!,
+                onCategorySelected: (categoryId) {
+                  setState(() {
+                    selectedCategoryId = categoryId;
+                    filterPlants();
+                  });
+                },
+              ),
+
+            const SizedBox(height: 20),
+
+            if (plants.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text("No plants found."),
                 ),
-            plants.isEmpty
-                ? const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Center(child: Text("No plants found.")),
-                )
-                : FeaturedSlider(
-                  plants: plants,
-                  // controller: controller,
-                  activePage: activePage,
-                  onPageChanged: (val) {
-                    setState(() {
-                      activePage = val;
-                    });
-                  },
-                ),
-            if (plants.isNotEmpty) PopularSection(plants: plants),
+              )
+            else
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FeaturedSlider(
+                    plants: plants,
+                    activePage: activePage,
+                    onPageChanged: (val) => setState(() => activePage = val),
+                  ),
+                  const SizedBox(height: 30),
+                  Text(
+                    "All Plants",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 10),
+                  PopularSection(plants: allPlants), // Show all plants
+                ],
+              ),
           ],
         ),
       ),
