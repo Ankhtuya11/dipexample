@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/plant_detail_page.dart';
 import 'dart:convert'; // For base64Decode
 import '../constants.dart';
 
@@ -10,8 +11,9 @@ class PopularSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -30,28 +32,41 @@ class PopularSection extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
-            height: 130,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(top: 10),
-              itemCount: plants.length,
-              itemBuilder: (_, index) {
-                final plant = plants[index];
-                String? imageBase64 =
-                    plant['image_base64']; // Assuming image is base64
+          const SizedBox(height: 10),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(), // Let parent scroll
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // Two columns
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 3, // Adjust this for your layout
+            ),
+            itemCount: plants.length,
+            itemBuilder: (_, index) {
+              final plant = plants[index];
+              String? imageBase64 = plant['image_base64'];
 
-                // If the image contains the data:image/png;base64, prefix, remove it
-                if (imageBase64 != null && imageBase64.isNotEmpty) {
-                  imageBase64 = imageBase64.replaceAll(
-                    RegExp(r"^data:image\/[a-zA-Z]+;base64,"),
-                    "",
-                  );
-                }
+              if (imageBase64 != null && imageBase64.isNotEmpty) {
+                imageBase64 = imageBase64.replaceAll(
+                  RegExp(r"^data:image\/[a-zA-Z]+;base64,"),
+                  "",
+                );
+              }
 
-                return Container(
-                  width: 200,
-                  margin: const EdgeInsets.only(left: 20, right: 10),
+              return GestureDetector(
+                onTap: () {
+                  final plantId = plant['id'];
+                  if (plantId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PlantDetailPage(plantId: plantId),
+                      ),
+                    );
+                  }
+                },
+                child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: lightGreen,
@@ -67,23 +82,21 @@ class PopularSection extends StatelessWidget {
                         child:
                             imageBase64 != null && imageBase64.isNotEmpty
                                 ? Image.memory(
-                                  base64Decode(
-                                    imageBase64,
-                                  ), // Decode base64 image
-                                  width: 70,
-                                  height: 70,
+                                  base64Decode(imageBase64),
+                                  width: 50,
+                                  height: 50,
                                   fit: BoxFit.cover,
                                 )
                                 : Image.asset(
                                   plant['image'] ??
-                                      'assets/images/default_image.png', // Default image if base64 is not available
-                                  width: 70,
-                                  height: 70,
+                                      'assets/images/default_image.png',
+                                  width: 50,
+                                  height: 50,
                                   fit: BoxFit.cover,
                                   errorBuilder:
                                       (context, error, stackTrace) => Container(
-                                        width: 70,
-                                        height: 70,
+                                        width: 50,
+                                        height: 50,
                                         color: Colors.green.shade100,
                                         child: const Icon(Icons.local_florist),
                                       ),
@@ -100,27 +113,26 @@ class PopularSection extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(width: 5),
                       CircleAvatar(
-                        radius: 15,
+                        radius: 13,
                         backgroundColor: green,
                         child: Image.asset(
                           'assets/icons/add.png',
                           color: white,
-                          height: 15,
+                          height: 13,
                           errorBuilder:
                               (context, error, stackTrace) => const Icon(
                                 Icons.add,
                                 color: Colors.white,
-                                size: 15,
+                                size: 13,
                               ),
                         ),
                       ),
                     ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),
