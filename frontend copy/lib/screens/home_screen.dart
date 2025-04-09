@@ -17,7 +17,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int? selectedCategoryId;
   int activePage = 0;
-  PageController controller = PageController(viewportFraction: 0.7);
+
+  // ✅ This controller is used for the animated card slider
+  final PageController controller = PageController(viewportFraction: 0.75);
 
   List<Map<String, dynamic>> categories = [];
   List<Map<String, dynamic>> plants = [];
@@ -61,7 +63,7 @@ class _HomePageState extends State<HomePage> {
       List<Map<String, dynamic>> categoryList = List<Map<String, dynamic>>.from(
         data.map((item) => item as Map<String, dynamic>),
       );
-      categoryList.insert(0, {"id": 0, "name": "All"}); // 👈 Add "All"
+      categoryList.insert(0, {"id": 0, "name": "All"});
       return categoryList;
     } else {
       throw Exception('Failed to load categories');
@@ -80,6 +82,12 @@ class _HomePageState extends State<HomePage> {
     } else {
       throw Exception('Failed to load plants');
     }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose(); // 💧 Clean up controller
+    super.dispose();
   }
 
   @override
@@ -134,17 +142,10 @@ class _HomePageState extends State<HomePage> {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 4),
-            Text(
-              "Find your favorite plants",
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
+
             const SizedBox(height: 16),
             SearchBarComponent(),
             const SizedBox(height: 20),
-
             if (categories.isEmpty)
               const Center(child: Text("No categories found."))
             else
@@ -158,9 +159,7 @@ class _HomePageState extends State<HomePage> {
                   });
                 },
               ),
-
             const SizedBox(height: 20),
-
             if (plants.isEmpty)
               const Center(
                 child: Padding(
@@ -178,12 +177,9 @@ class _HomePageState extends State<HomePage> {
                     onPageChanged: (val) => setState(() => activePage = val),
                   ),
                   const SizedBox(height: 30),
-                  Text(
-                    "All Plants",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 10),
-                  PopularSection(plants: allPlants), // Show all plants
+                  PopularSection(
+                    plants: plants,
+                  ), // No need to add "Алдартай" above this
                 ],
               ),
           ],

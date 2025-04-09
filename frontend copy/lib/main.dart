@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/findplants.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/plant_detail.dart';
@@ -24,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   final List<Widget> _screens = [
     HomePage(),
     MyPlantsScreen(),
-    AddPlantPage(),
+    FindPlantsPage(),
     LoginScreen(),
     RegisterScreen(),
   ];
