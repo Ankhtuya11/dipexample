@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setString('access', data['access']);
       await prefs.setString('refresh', data['refresh']);
       Fluttertoast.showToast(msg: 'Амжилттай нэвтэрлээ');
-      Navigator.pushReplacementNamed(context, '/myplants');
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       Fluttertoast.showToast(msg: 'Нэвтрэхэд алдаа гарлаа');
     }

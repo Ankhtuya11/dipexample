@@ -38,8 +38,9 @@ class AnimatedNavbar extends StatelessWidget {
           onTabChange: onTabChange,
           tabs: [
             const GButton(icon: Icons.home, text: 'Home'),
-            const GButton(icon: Icons.medical_services, text: 'Diagnose'),
             const GButton(icon: Icons.search, text: 'Find Plant'),
+            const GButton(icon: Icons.add, text: 'Plant add'),
+            const GButton(icon: Icons.local_florist, text: 'My Plants'),
             GButton(
               icon: Icons.handyman,
               text: 'Toolkit',
@@ -62,7 +63,6 @@ class AnimatedNavbar extends StatelessWidget {
                 ],
               ),
             ),
-            const GButton(icon: Icons.local_florist, text: 'My Plants'),
           ],
         ),
       ),

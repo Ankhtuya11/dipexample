@@ -24,12 +24,12 @@ class _MyAppState extends State<MyApp> {
 
   final List<Widget> _screens = [
     HomePage(),
-    MyPlantsScreen(),
     FindPlantsPage(),
+    AddPlantPage(),
+    MyPlantsScreen(),
     LoginScreen(),
     RegisterScreen(),
   ];
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,7 +45,12 @@ class _MyAppState extends State<MyApp> {
           },
         ),
       ),
-      routes: {'/plant_detail': (context) => PlantDetailScreen()},
+      routes: {
+        '/plant_detail': (context) => PlantDetailScreen(),
+        '/register': (context) => RegisterScreen(),
+        '/login': (context) => LoginScreen(),
+        '/home': (context) => HomePage(),
+      },
     );
   }
 }
