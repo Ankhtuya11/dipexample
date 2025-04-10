@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/ToolkitSection.dart';
 import 'package:frontend/screens/findplants.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
@@ -27,6 +28,7 @@ class _MyAppState extends State<MyApp> {
     FindPlantsPage(),
     AddPlantPage(),
     MyPlantsScreen(),
+    ToolkitSection(),
     LoginScreen(),
     RegisterScreen(),
   ];
@@ -46,9 +48,9 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       routes: {
-        '/plant_detail': (context) => PlantDetailScreen(),
         '/register': (context) => RegisterScreen(),
         '/login': (context) => LoginScreen(),
+        '/plant_detail': (context) => PlantDetailScreen(),
         '/home': (context) => HomePage(),
       },
     );

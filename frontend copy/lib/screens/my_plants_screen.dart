@@ -21,7 +21,7 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access');
     if (token == null) {
-      Navigator.pushReplacementNamed(context, '/login');
+      // Navigator.pushReplacementNamed(context, '/login');
       return;
     }
 

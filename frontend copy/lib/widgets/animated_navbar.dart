@@ -63,6 +63,7 @@ class AnimatedNavbar extends StatelessWidget {
                 ],
               ),
             ),
+            const GButton(icon: Icons.login, text: 'login'),
           ],
         ),
       ),
