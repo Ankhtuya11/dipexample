@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions
 from .models import PlantInfo, UserPlant, Category
-from .serializers import PlantInfoSerializer, UserPlantSerializer, CategorySerializer
+from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .serializers import RegisterSerializer
@@ -29,16 +29,16 @@ class PlantInfoViewSet(viewsets.ModelViewSet):
     serializer_class = PlantInfoSerializer
     permission_classes = [permissions.AllowAny]
 
-class UserPlantViewSet(viewsets.ModelViewSet):
-    queryset = UserPlant.objects.none()  # ← нэмэх
-    serializer_class = UserPlantSerializer
-    permission_classes = [IsAuthenticated]
+# class UserPlantViewSet(viewsets.ModelViewSet):
+#     queryset = UserPlant.objects.none()  # ← нэмэх
+#     serializer_class = UserPlantSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return UserPlant.objects.filter(user=self.request.user)
+#     def get_queryset(self):
+#         return UserPlant.objects.filter(user=self.request.user)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+#     def perform_create(self, serializer):
+#         serializer.save(user=self.request.user)
 
 
 
@@ -63,4 +63,29 @@ class PlantsByCategoryAPIView(APIView):
         serializer = PlantInfoSerializer(plants, many=True)
 
         # Return the list of plants
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserAddPlantView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        """
+        Add a plant to the user's collection.
+        """
+        serializer = UserAddPlantSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user_plant = serializer.save()
+            return Response({
+                'message': 'Plant added successfully!',
+                'plant': serializer.data
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+    
+
+class UserPlantsListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user_plants = UserPlant.objects.filter(user=request.user)
+        serializer = UserPlantDetailSerializer(user_plants, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

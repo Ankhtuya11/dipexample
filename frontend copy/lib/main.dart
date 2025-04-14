@@ -7,10 +7,11 @@ import 'package:frontend/screens/plant_detail.dart';
 import 'package:frontend/screens/register_screen.dart';
 import 'package:frontend/screens/my_plants_screen.dart';
 import 'package:frontend/screens/add_plant_screen.dart';
-import 'package:frontend/widgets/animated_navbar.dart'; // Make sure this widget is created
+import 'package:frontend/widgets/animated_navbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -22,36 +23,94 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
+  bool _isLoggedIn = false;
 
-  final List<Widget> _screens = [
-    HomePage(),
-    FindPlantsPage(),
-    AddPlantPage(),
-    MyPlantsScreen(),
-    ToolkitSection(),
-    LoginScreen(),
-    RegisterScreen(),
-  ];
+  List<String> _tabKeys = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access');
+    setState(() {
+      _isLoggedIn = token != null && token.isNotEmpty;
+    });
+  }
+
+  List<Widget> _getScreens() {
+    List<Widget> screens = [
+      HomePage(),
+      FindPlantsPage(),
+      if (_isLoggedIn) AddPlantPage(),
+      if (_isLoggedIn) MyPlantsScreen(),
+      ToolkitSection(),
+      if (!_isLoggedIn) LoginScreen(),
+      if (!_isLoggedIn) RegisterScreen(),
+      if (_isLoggedIn) const SizedBox(), // Placeholder for Logout
+    ];
+
+    _tabKeys = [
+      'home',
+      'search',
+      if (_isLoggedIn) 'add',
+      if (_isLoggedIn) 'myplants',
+      'toolkit',
+      if (!_isLoggedIn) 'login',
+      if (!_isLoggedIn) 'register',
+      if (_isLoggedIn) 'logout',
+    ];
+
+    return screens;
+  }
+
+  Future<void> _handleTabChange(int index) async {
+    final selectedTab = _tabKeys[index];
+
+    if (selectedTab == 'logout') {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('access');
+      await prefs.remove('refresh');
+
+      setState(() {
+        _isLoggedIn = false;
+        _currentIndex = 0;
+      });
+
+      // Navigate to login screen
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+      return;
+    }
+
+    setState(() => _currentIndex = index);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screens = _getScreens();
+
     return MaterialApp(
       title: 'Plantanhaa',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'Gilroy'),
       home: Scaffold(
-        body: _screens[_currentIndex],
+        body: screens[_currentIndex],
         bottomNavigationBar: AnimatedNavbar(
           selectedIndex: _currentIndex,
-          onTabChange: (index) {
-            setState(() => _currentIndex = index);
-          },
+          onTabChange: _handleTabChange,
+          isLoggedIn: _isLoggedIn,
         ),
       ),
       routes: {
         '/register': (context) => RegisterScreen(),
         '/login': (context) => LoginScreen(),
         '/plant_detail': (context) => PlantDetailScreen(),
-        '/home': (context) => HomePage(),
+        '/home': (context) => const MyApp(),
       },
     );
   }

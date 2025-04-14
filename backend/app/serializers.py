@@ -49,16 +49,21 @@ class PlantInfoSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class UserPlantSerializer(serializers.ModelSerializer):
-    plant = PlantInfoSerializer(read_only=True)  # Ургамлын дэлгэрэнгүйг харуулна
-    plant_id = serializers.PrimaryKeyRelatedField(
-        queryset=PlantInfo.objects.all(), write_only=True, source='plant'
-    )
+class UserAddPlantSerializer(serializers.ModelSerializer):
+    plant_id = serializers.PrimaryKeyRelatedField(queryset=PlantInfo.objects.all(), write_only=True)
+    nickname = serializers.CharField(max_length=100)
+    last_watered = serializers.DateField(required=False, allow_null=True)
+    image_base64 = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = UserPlant
-        fields = ['id', 'user', 'plant', 'plant_id', 'nickname', 'last_watered', 'image']
-        read_only_fields = ['user']
+        fields = ['plant_id', 'nickname', 'last_watered', 'image_base64']
+
+    def create(self, validated_data):
+        user = self.context['request'].user  # Getting the user from the request context
+        plant = validated_data.pop('plant_id')
+        user_plant = UserPlant.objects.create(user=user, plant=plant, **validated_data)
+        return user_plant
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,3 +75,13 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name']  # Assuming Category has 'id' and 'name' fields
+
+
+
+
+class UserPlantDetailSerializer(serializers.ModelSerializer):
+    plant = PlantInfoSerializer(read_only=True)
+
+    class Meta:
+        model = UserPlant
+        fields = ['id', 'plant', 'nickname', 'last_watered', 'image_base64']

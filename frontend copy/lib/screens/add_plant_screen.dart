@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddPlantPage extends StatefulWidget {
   @override
@@ -11,38 +12,36 @@ class AddPlantPage extends StatefulWidget {
 
 class _AddPlantPageState extends State<AddPlantPage> {
   final _formKey = GlobalKey<FormState>();
-  String name = '';
-  String description = '';
-  String watering = '';
-  String sunlight = '';
-  String temperature = '';
+  final picker = ImagePicker();
+
+  String nickname = '';
+  int? selectedPlantId;
+  DateTime? lastWatered;
   String? base64Image;
-  int? categoryId;
   bool isSubmitting = false;
 
-  List<Map<String, dynamic>> categories = [];
-  final picker = ImagePicker();
+  List<Map<String, dynamic>> plants = [];
 
   @override
   void initState() {
     super.initState();
-    fetchCategories();
+    fetchPlants();
   }
 
-  Future<void> fetchCategories() async {
-    final url = Uri.parse("http://127.0.0.1:8000/api/categories/");
+  Future<void> fetchPlants() async {
+    final url = Uri.parse("http://127.0.0.1:8000/api/plants/");
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      final List<dynamic> categoryData = jsonDecode(
+      final List<dynamic> plantData = jsonDecode(
         utf8.decode(response.bodyBytes),
       );
       setState(() {
-        categories =
-            categoryData
-                .map((e) => {'id': e['id'], 'name': e['name']})
-                .toList();
+        plants =
+            plantData.map((e) => {'id': e['id'], 'name': e['name']}).toList();
       });
+    } else {
+      print("Failed to fetch plants");
     }
   }
 
@@ -52,40 +51,45 @@ class _AddPlantPageState extends State<AddPlantPage> {
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
       setState(() {
-        base64Image =
-            "data:image/png;base64," + base64Encode(bytes); // ready to send
+        base64Image = "data:image/png;base64," + base64Encode(bytes);
       });
     }
   }
 
   Future<void> submitPlant() async {
     if (!_formKey.currentState!.validate() ||
-        base64Image == null ||
-        categoryId == null) {
+        selectedPlantId == null ||
+        base64Image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please fill in all fields, pick image, and select category.',
-          ),
-        ),
+        const SnackBar(content: Text('Please fill all required fields.')),
       );
       return;
     }
 
     setState(() => isSubmitting = true);
 
-    final url = Uri.parse("http://127.0.0.1:8000/api/create_plant/");
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access');
+
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No token found, please login again.')),
+      );
+      return;
+    }
+
+    final url = Uri.parse("http://127.0.0.1:8000/api/user/add_plant/");
     final response = await http.post(
       url,
-      headers: {"Content-Type": "application/json; charset=utf-8"},
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Authorization": "Bearer $token",
+      },
       body: jsonEncode({
-        "name": name,
-        "description": description,
-        "watering": watering,
-        "sunlight": sunlight,
-        "temperature": temperature,
+        "plant_id": selectedPlantId,
+        "nickname": nickname,
+        "last_watered": lastWatered?.toIso8601String().split('T')[0],
         "image_base64": base64Image,
-        "category_id": categoryId,
       }),
     );
 
@@ -95,10 +99,11 @@ class _AddPlantPageState extends State<AddPlantPage> {
       _formKey.currentState!.reset();
       setState(() {
         base64Image = null;
-        categoryId = null;
+        selectedPlantId = null;
+        lastWatered = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🌿 Plant added successfully!')),
+        const SnackBar(content: Text('🌿 Plant added to your collection!')),
       );
     } else {
       print(response.body);
@@ -113,7 +118,7 @@ class _AddPlantPageState extends State<AddPlantPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F9F5),
       appBar: AppBar(
-        title: const Text("Add New Plant"),
+        title: const Text("Add My Plant"),
         backgroundColor: Colors.green.shade600,
         elevation: 0,
       ),
@@ -123,36 +128,51 @@ class _AddPlantPageState extends State<AddPlantPage> {
           key: _formKey,
           child: Column(
             children: [
-              buildTextField("Name", onChanged: (val) => name = val),
-              buildTextField(
-                "Description",
-                onChanged: (val) => description = val,
-              ),
-              buildTextField("Watering", onChanged: (val) => watering = val),
-              buildTextField("Sunlight", onChanged: (val) => sunlight = val),
-              buildTextField(
-                "Temperature",
-                onChanged: (val) => temperature = val,
-              ),
-
-              const SizedBox(height: 16),
+              buildTextField("Nickname", onChanged: (val) => nickname = val),
+              const SizedBox(height: 14),
               DropdownButtonFormField<int>(
-                decoration: buildInputDecoration("Category"),
-                value: categoryId,
-                onChanged: (value) => setState(() => categoryId = value),
+                decoration: buildInputDecoration("Select Plant"),
+                value: selectedPlantId,
+                onChanged: (value) => setState(() => selectedPlantId = value),
                 items:
-                    categories.map((category) {
+                    plants.map((plant) {
                       return DropdownMenuItem<int>(
-                        value: category['id'],
-                        child: Text(category['name']),
+                        value: plant['id'],
+                        child: Text(plant['name']),
                       );
                     }).toList(),
                 validator:
-                    (value) =>
-                        value == null ? "Please select a category" : null,
+                    (value) => value == null ? "Please select a plant" : null,
               ),
-
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      lastWatered != null
+                          ? "Last Watered: ${lastWatered!.toLocal().toString().split(' ')[0]}"
+                          : "Pick last watered date",
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.calendar_today),
+                    onPressed: () async {
+                      DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        setState(() {
+                          lastWatered = picked;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
               ElevatedButton.icon(
                 onPressed: pickImage,
                 icon: const Icon(Icons.photo_library_outlined),
@@ -169,7 +189,6 @@ class _AddPlantPageState extends State<AddPlantPage> {
                   ),
                 ),
               ),
-
               if (base64Image != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 14),
@@ -181,12 +200,7 @@ class _AddPlantPageState extends State<AddPlantPage> {
                           borderRadius: BorderRadius.circular(14),
                           image: DecorationImage(
                             image: MemoryImage(
-                              base64Decode(
-                                base64Image!.replaceAll(
-                                  RegExp(r'^data:image\/[a-zA-Z]+;base64,'),
-                                  '',
-                                ),
-                              ),
+                              base64Decode(base64Image!.split(',').last),
                             ),
                             fit: BoxFit.cover,
                           ),
@@ -215,7 +229,6 @@ class _AddPlantPageState extends State<AddPlantPage> {
                     ],
                   ),
                 ),
-
               const SizedBox(height: 30),
               isSubmitting
                   ? const CircularProgressIndicator()

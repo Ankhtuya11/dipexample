@@ -4,11 +4,13 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 class AnimatedNavbar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onTabChange;
+  final bool isLoggedIn;
 
   const AnimatedNavbar({
     super.key,
     required this.selectedIndex,
     required this.onTabChange,
+    required this.isLoggedIn,
   });
 
   @override
@@ -39,31 +41,12 @@ class AnimatedNavbar extends StatelessWidget {
           tabs: [
             const GButton(icon: Icons.home, text: 'Home'),
             const GButton(icon: Icons.search, text: 'Find Plant'),
-            const GButton(icon: Icons.add, text: 'Plant add'),
-            const GButton(icon: Icons.local_florist, text: 'My Plants'),
-            GButton(
-              icon: Icons.handyman,
-              text: 'Toolkit',
-              leading: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  const Icon(Icons.handyman),
-                  Positioned(
-                    top: -4,
-                    right: -4,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const GButton(icon: Icons.login, text: 'login'),
+            if (isLoggedIn) const GButton(icon: Icons.add, text: 'Plant add'),
+            if (isLoggedIn)
+              const GButton(icon: Icons.local_florist, text: 'My Plants'),
+            const GButton(icon: Icons.handyman, text: 'Toolkit'),
+            if (!isLoggedIn) const GButton(icon: Icons.login, text: 'Login'),
+            if (isLoggedIn) const GButton(icon: Icons.logout, text: 'Logout'),
           ],
         ),
       ),

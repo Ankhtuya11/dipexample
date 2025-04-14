@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
 router.register('plants', PlantInfoViewSet)
-router.register('myplants', UserPlantViewSet, basename='myplants')
+# router.register('myplants', UserPlantViewSet, basename='myplants')
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -15,4 +15,6 @@ urlpatterns = [
     path('create_plant/', PlantInfoCreateView.as_view(), name='plant-create'),
     path('categories/', CategoryListView.as_view(), name='category-list'),
     path('category/<int:category_id>/', PlantsByCategoryAPIView.as_view(), name='plants-by-category'),
+    path('user/add_plant/', UserAddPlantView.as_view(), name='user-add-plant'),
+    path('user/my_plants/', UserPlantsListView.as_view(), name='user-my-plants'),
 ]
