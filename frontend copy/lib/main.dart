@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/OnboardingScreen.dart';
 import 'package:frontend/screens/ToolkitSection.dart';
 import 'package:frontend/screens/findplants.dart';
 import 'package:frontend/screens/home_screen.dart';
@@ -82,7 +83,7 @@ class _MyAppState extends State<MyApp> {
 
       // Navigate to login screen
       if (context.mounted) {
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(context, '/home');
       }
       return;
     }
@@ -108,6 +109,7 @@ class _MyAppState extends State<MyApp> {
       ),
       routes: {
         '/register': (context) => RegisterScreen(),
+        // '/': (context) => const OnboardScreen(),
         '/login': (context) => LoginScreen(),
         '/plant_detail': (context) => PlantDetailScreen(),
         '/home': (context) => const MyApp(),

@@ -69,6 +69,7 @@ flutter:
     - assets/images/bed.jpg
     - assets/images/air.jpg
     - assets/images/shade.jpg
+    - assets/images/plant_background.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

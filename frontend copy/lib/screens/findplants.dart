@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../constants.dart';
-import 'package:frontend/components/search_bar.dart';
+import '../constants.dart'; // make sure white, black, green are defined
 
 class FindPlantsPage extends StatefulWidget {
   const FindPlantsPage({super.key});
@@ -24,9 +23,8 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
   Future<void> fetchPlantPicks() async {
     try {
       final response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/api/plants/'), // change if needed
+        Uri.parse('http://127.0.0.1:8000/api/plants/'),
       );
-
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
         setState(() {
@@ -34,34 +32,98 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to fetch plant data');
+        throw Exception('Failed to load plants');
       }
     } catch (e) {
       print('Error: $e');
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
+  final List<Map<String, String>> categories = [
+    {'label': 'Better Sleep', 'image': 'assets/images/bed.jpeg'},
+    {'label': 'Air-Purifying', 'image': 'assets/images/air.jpeg'},
+    {'label': 'Shade-Loving', 'image': 'assets/images/shade.jpeg'},
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> categories = [
-      {'label': 'Better Sleep', 'image': 'assets/images/bed.jpg'},
-      {'label': 'Air-Purifying', 'image': 'assets/images/air.jpg'},
-      {'label': 'Shade-Loving', 'image': 'assets/images/shade.jpg'},
-    ];
-
     return Scaffold(
       backgroundColor: white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(left: 28),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SearchBarComponent(),
+              // Search + Identify
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search',
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                    onPressed: () {
+                      // TODO: Add identify logic
+                    },
+                    icon: const Icon(Icons.camera_alt, size: 20),
+                    label: const Text("Identify"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
 
+              // Plant Finder
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: const [
+                    Icon(Icons.travel_explore, color: Colors.teal),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Plant Finder\nChoose the perfect plants for you!',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Icon(Icons.arrow_forward_ios, size: 16),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
               Text(
                 'Home Greenery',
                 style: Theme.of(
@@ -69,44 +131,26 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
+
               SizedBox(
-                height: 120,
+                height: 100,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 24),
+                  separatorBuilder: (_, __) => const SizedBox(width: 18),
                   itemBuilder: (_, index) {
                     final item = categories[index];
                     return Column(
                       children: [
-                        Expanded(
-                          child: Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: green, width: 2),
-                              image: DecorationImage(
-                                image: AssetImage(item['image']!),
-                                fit: BoxFit.cover,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: green.withOpacity(0.2),
-                                  blurRadius: 6,
-                                ),
-                              ],
-                            ),
-                          ),
+                        CircleAvatar(
+                          radius: 35,
+                          backgroundImage: AssetImage(item['image']!),
+                          backgroundColor: Colors.grey.shade200,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         Text(
                           item['label']!,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ],
                     );
@@ -125,18 +169,49 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
 
               isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : SizedBox(
-                    height: 250,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      itemCount: picks.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 20),
-                      itemBuilder: (_, index) {
-                        final plant = picks[index];
-                        return Expanded(
-                          child: Container(
-                            width: 200,
+                  : Column(
+                    children:
+                        picks.map((plant) {
+                          String? base64Image = plant['image_base64'];
+                          Widget plantImage;
+
+                          if (base64Image != null && base64Image.isNotEmpty) {
+                            base64Image = base64Image.replaceAll(
+                              RegExp(r'^data:image/[^;]+;base64,'),
+                              '',
+                            );
+                            try {
+                              plantImage = Image.memory(
+                                base64Decode(base64Image),
+                                height: 130,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              );
+                            } catch (e) {
+                              plantImage = Container(
+                                height: 130,
+                                color: Colors.grey.shade200,
+                                child: const Icon(
+                                  Icons.broken_image,
+                                  size: 40,
+                                  color: Colors.red,
+                                ),
+                              );
+                            }
+                          } else {
+                            plantImage = Container(
+                              height: 130,
+                              color: Colors.grey.shade200,
+                              child: const Icon(
+                                Icons.local_florist,
+                                size: 40,
+                                color: Colors.green,
+                              ),
+                            );
+                          }
+
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 20),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               color: white,
@@ -148,105 +223,76 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                                 ),
                               ],
                             ),
-                            child: Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(20),
-                                    ),
-                                    child: () {
-                                      String? base64Image =
-                                          plant['image_base64'];
-                                      if (base64Image != null &&
-                                          base64Image.isNotEmpty) {
-                                        base64Image = base64Image.replaceAll(
-                                          RegExp(
-                                            r"^data:image\/[a-zA-Z]+;base64,",
-                                          ),
-                                          "",
-                                        );
-                                        return Image.memory(
-                                          base64Decode(base64Image),
-                                          height: 130,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                        );
-                                      } else {
-                                        return Container(
-                                          height: 180,
-                                          width: double.infinity,
-                                          color: Colors.grey[200],
-                                          child: const Icon(
-                                            Icons.local_florist,
-                                            size: 40,
-                                            color: Colors.green,
-                                          ),
-                                        );
-                                      }
-                                    }(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(20),
                                   ),
-
-                                  Padding(
-                                    padding: const EdgeInsets.all(14),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          plant['name'] ?? '',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
+                                  child: plantImage,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        plant['name'] ?? 'Unknown',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.grass,
+                                            size: 16,
+                                            color: Colors.grey,
                                           ),
-                                        ),
-                                        // const SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.grass,
-                                              size: 16,
-                                              color: Colors.grey,
-                                            ),
-                                            const SizedBox(width: 6),
-                                            Expanded(
-                                              child: Text(
-                                                plant['watering'] ?? 'N/A',
-                                                style: const TextStyle(
-                                                  fontSize: 13,
-                                                ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              plant['watering'] ?? 'N/A',
+                                              style: const TextStyle(
+                                                fontSize: 13,
                                               ),
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.wb_sunny_outlined,
-                                              size: 16,
-                                              color: Colors.grey,
-                                            ),
-                                            const SizedBox(width: 6),
-                                            Text(
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.wb_sunny_outlined,
+                                            size: 16,
+                                            color: Colors.grey,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
                                               plant['temperature'] ?? 'N/A',
                                               style: const TextStyle(
                                                 fontSize: 13,
                                               ),
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        }).toList(),
                   ),
             ],
           ),
