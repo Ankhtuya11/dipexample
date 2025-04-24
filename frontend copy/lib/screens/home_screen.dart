@@ -47,17 +47,16 @@ class _HomePageState extends State<HomePage> {
     if (selectedCategoryId == 0 || selectedCategoryId == null) {
       plants = List<Map<String, dynamic>>.from(allPlants);
     } else {
-      plants =
-          allPlants
-              .where((plant) => plant['category'] == selectedCategoryId)
-              .toList();
+      plants = allPlants
+          .where((plant) => plant['category'] == selectedCategoryId)
+          .toList();
     }
     setState(() {});
   }
 
   static Future<List<Map<String, dynamic>>> fetchCategories() async {
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/categories/'),
+      Uri.parse('http://192.168.0.242:8000/api/categories/'),
     );
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -73,7 +72,7 @@ class _HomePageState extends State<HomePage> {
 
   static Future<List<Map<String, dynamic>>> fetchPlants() async {
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/plants/'),
+      Uri.parse('http://192.168.0.242:8000/api/plants/'),
     );
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -122,9 +121,8 @@ class _HomePageState extends State<HomePage> {
               child: Image.asset(
                 'assets/images/pro.png',
                 fit: BoxFit.cover,
-                errorBuilder:
-                    (_, __, ___) =>
-                        const Icon(Icons.person, color: Colors.white),
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.person, color: Colors.white),
               ),
             ),
           ),

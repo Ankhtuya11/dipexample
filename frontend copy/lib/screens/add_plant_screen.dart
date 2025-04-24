@@ -29,7 +29,7 @@ class _AddPlantPageState extends State<AddPlantPage> {
   }
 
   Future<void> fetchPlants() async {
-    final url = Uri.parse("http://127.0.0.1:8000/api/plants/");
+    final url = Uri.parse("http://192.168.0.242:8000/api/plants/");
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -78,7 +78,7 @@ class _AddPlantPageState extends State<AddPlantPage> {
       return;
     }
 
-    final url = Uri.parse("http://127.0.0.1:8000/api/user/add_plant/");
+    final url = Uri.parse("http://192.168.0.242:8000/api/user/add_plant/");
     final response = await http.post(
       url,
       headers: {
@@ -191,18 +191,22 @@ class _AddPlantPageState extends State<AddPlantPage> {
                         ],
                       ),
                       child: DropdownButtonFormField<int>(
-                        decoration: buildInputDecoration("Select Plant").copyWith(
-                          prefixIcon: const Icon(Icons.spa, color: Color(0xFF2E7D32)),
+                        decoration:
+                            buildInputDecoration("Select Plant").copyWith(
+                          prefixIcon:
+                              const Icon(Icons.spa, color: Color(0xFF2E7D32)),
                         ),
                         value: selectedPlantId,
-                        onChanged: (value) => setState(() => selectedPlantId = value),
+                        onChanged: (value) =>
+                            setState(() => selectedPlantId = value),
                         items: plants.map((plant) {
                           return DropdownMenuItem<int>(
                             value: plant['id'],
                             child: Text(plant['name']),
                           );
                         }).toList(),
-                        validator: (value) => value == null ? "Please select a plant" : null,
+                        validator: (value) =>
+                            value == null ? "Please select a plant" : null,
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -221,7 +225,8 @@ class _AddPlantPageState extends State<AddPlantPage> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.water_drop, color: Color(0xFF2E7D32)),
+                          const Icon(Icons.water_drop,
+                              color: Color(0xFF2E7D32)),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -232,7 +237,8 @@ class _AddPlantPageState extends State<AddPlantPage> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.calendar_today, color: Color(0xFF2E7D32)),
+                            icon: const Icon(Icons.calendar_today,
+                                color: Color(0xFF2E7D32)),
                             onPressed: () async {
                               DateTime? picked = await showDatePicker(
                                 context: context,
@@ -395,7 +401,8 @@ class _AddPlantPageState extends State<AddPlantPage> {
     );
   }
 
-  Widget buildTextField(String label, {required Function(String) onChanged, IconData? icon}) {
+  Widget buildTextField(String label,
+      {required Function(String) onChanged, IconData? icon}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -410,7 +417,8 @@ class _AddPlantPageState extends State<AddPlantPage> {
       ),
       child: TextFormField(
         decoration: buildInputDecoration(label).copyWith(
-          prefixIcon: icon != null ? Icon(icon, color: const Color(0xFF2E7D32)) : null,
+          prefixIcon:
+              icon != null ? Icon(icon, color: const Color(0xFF2E7D32)) : null,
         ),
         onChanged: onChanged,
         validator: (val) => val!.isEmpty ? 'Required' : null,

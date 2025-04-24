@@ -42,7 +42,8 @@ class _PlantDetailScreenState extends State<PlantDetailScreen> {
         return;
       }
 
-      final url = Uri.parse('http://127.0.0.1:8000/api/plants/user/plant/${widget.plantId}/');
+      final url = Uri.parse(
+          'http:/192.168.0.242:8000/api/plants/user/plant/${widget.plantId}/');
       print('Fetching plant details from: $url'); // Debug print
 
       final response = await http.get(
@@ -186,7 +187,8 @@ class _PlantDetailScreenState extends State<PlantDetailScreen> {
                               title: 'Last Watered',
                               content: plantData?['last_watered'] != null
                                   ? DateFormat('MMMM d, y').format(
-                                      DateTime.parse(plantData!['last_watered']),
+                                      DateTime.parse(
+                                          plantData!['last_watered']),
                                     )
                                   : 'Never',
                               icon: Icons.water_drop,
@@ -197,7 +199,8 @@ class _PlantDetailScreenState extends State<PlantDetailScreen> {
                               title: 'Next Watering',
                               content: plantData?['next_watering_date'] != null
                                   ? DateFormat('MMMM d, y').format(
-                                      DateTime.parse(plantData!['next_watering_date']),
+                                      DateTime.parse(
+                                          plantData!['next_watering_date']),
                                     )
                                   : 'Not scheduled',
                               icon: Icons.calendar_today,
@@ -304,4 +307,4 @@ class _PlantDetailScreenState extends State<PlantDetailScreen> {
       ),
     );
   }
-} 
+}

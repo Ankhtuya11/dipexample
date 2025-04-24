@@ -39,9 +39,9 @@ class AnimatedNavbar extends StatelessWidget {
           selectedIndex: selectedIndex,
           onTabChange: onTabChange,
           tabs: [
-            const GButton(icon: Icons.home, text: 'Home'),
-            const GButton(icon: Icons.search, text: 'Find'),
-            if (isLoggedIn) const GButton(icon: Icons.add, text: 'Add'),
+            const GButton(icon: Icons.home),
+            const GButton(icon: Icons.search),
+            if (isLoggedIn) const GButton(icon: Icons.add),
             if (isLoggedIn)
               const GButton(icon: Icons.local_florist, text: 'Mine'),
             const GButton(icon: Icons.handyman, text: 'Tool'),

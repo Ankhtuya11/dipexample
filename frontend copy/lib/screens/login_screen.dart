@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = true);
 
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/token/'),
+      Uri.parse('http://192.168.0.242:8000/api/token/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': usernameController.text,
@@ -166,15 +166,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      child:
-                          isLoading
-                              ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                              : const Text(
-                                'Login',
-                                style: TextStyle(fontSize: 18),
-                              ),
+                      child: isLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : const Text(
+                              'Login',
+                              style: TextStyle(fontSize: 18),
+                            ),
                     ),
                   ),
 

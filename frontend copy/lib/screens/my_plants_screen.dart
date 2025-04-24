@@ -27,7 +27,7 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
       return;
     }
 
-    final url = Uri.parse('http://127.0.0.1:8000/api/user/my_plants/');
+    final url = Uri.parse('http://192.168.0.242:8000/api/user/my_plants/');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $token'},
@@ -124,9 +124,10 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                   color: Colors.green.shade600,
                   child: GridView.builder(
                     padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.8,
+                      childAspectRatio:
+                          0.7, // Adjusted aspect ratio for flexibility
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
                     ),
@@ -138,7 +139,8 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PlantDetailScreen(plantId: plant['id']),
+                              builder: (context) =>
+                                  PlantDetailScreen(plantId: plant['id']),
                             ),
                           );
                         },
@@ -163,11 +165,14 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                                   top: Radius.circular(16),
                                 ),
                                 child: AspectRatio(
-                                  aspectRatio: 1.1,
+                                  aspectRatio: 1, // Made it flexible
                                   child: Builder(
                                     builder: (context) {
-                                      final base64Image = plant['image_base64'] ?? plant['plant']['image_base64'];
-                                      if (base64Image == null || base64Image.isEmpty) {
+                                      final base64Image =
+                                          plant['image_base64'] ??
+                                              plant['plant']['image_base64'];
+                                      if (base64Image == null ||
+                                          base64Image.isEmpty) {
                                         return Container(
                                           color: Colors.green.shade50,
                                           child: Icon(
@@ -179,11 +184,13 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                                       }
 
                                       try {
-                                        final cleanedBase64 = base64Image.contains(',')
-                                            ? base64Image.split(',').last
-                                            : base64Image;
+                                        final cleanedBase64 =
+                                            base64Image.contains(',')
+                                                ? base64Image.split(',').last
+                                                : base64Image;
 
-                                        final imageBytes = base64Decode(cleanedBase64);
+                                        final imageBytes =
+                                            base64Decode(cleanedBase64);
                                         return Image.memory(
                                           imageBytes,
                                           fit: BoxFit.cover,
@@ -191,7 +198,8 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                                           height: double.infinity,
                                         );
                                       } catch (e) {
-                                        print('Error decoding base64 image: $e');
+                                        print(
+                                            'Error decoding base64 image: $e');
                                         return Container(
                                           color: Colors.green.shade50,
                                           child: Icon(
@@ -210,11 +218,14 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             plant['nickname'],
@@ -248,7 +259,8 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                                           const SizedBox(width: 4),
                                           Expanded(
                                             child: Text(
-                                              plant['last_watered'] ?? 'Усаагүй',
+                                              plant['last_watered'] ??
+                                                  'Усаагүй',
                                               style: TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.blue.shade300,

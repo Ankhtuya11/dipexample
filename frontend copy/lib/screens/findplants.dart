@@ -25,7 +25,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
   Future<void> fetchPlantPicks() async {
     try {
       final response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/api/plants/'),
+        Uri.parse('http://192.168.0.242:8000/api/plants/'),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -177,130 +177,128 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
               isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Column(
-                    children:
-                        picks.map((plant) {
-                          String? base64Image = plant['image_base64'];
-                          Widget plantImage;
+                      children: picks.map((plant) {
+                        String? base64Image = plant['image_base64'];
+                        Widget plantImage;
 
-                          if (base64Image != null && base64Image.isNotEmpty) {
-                            base64Image = base64Image.replaceAll(
-                              RegExp(r'^data:image/[^;]+;base64,'),
-                              '',
+                        if (base64Image != null && base64Image.isNotEmpty) {
+                          base64Image = base64Image.replaceAll(
+                            RegExp(r'^data:image/[^;]+;base64,'),
+                            '',
+                          );
+                          try {
+                            plantImage = Image.memory(
+                              base64Decode(base64Image),
+                              height: 130,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
                             );
-                            try {
-                              plantImage = Image.memory(
-                                base64Decode(base64Image),
-                                height: 130,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              );
-                            } catch (e) {
-                              plantImage = Container(
-                                height: 130,
-                                color: Colors.grey.shade200,
-                                child: const Icon(
-                                  Icons.broken_image,
-                                  size: 40,
-                                  color: Colors.red,
-                                ),
-                              );
-                            }
-                          } else {
+                          } catch (e) {
                             plantImage = Container(
                               height: 130,
                               color: Colors.grey.shade200,
                               child: const Icon(
-                                Icons.local_florist,
+                                Icons.broken_image,
                                 size: 40,
-                                color: Colors.green,
+                                color: Colors.red,
                               ),
                             );
                           }
-
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: black.withOpacity(0.06),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20),
-                                  ),
-                                  child: plantImage,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        plant['name'] ?? 'Unknown',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.grass,
-                                            size: 16,
-                                            color: Colors.grey,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Expanded(
-                                            child: Text(
-                                              plant['watering'] ?? 'N/A',
-                                              style: const TextStyle(
-                                                fontSize: 13,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.wb_sunny_outlined,
-                                            size: 16,
-                                            color: Colors.grey,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Expanded(
-                                            child: Text(
-                                              plant['temperature'] ?? 'N/A',
-                                              style: const TextStyle(
-                                                fontSize: 13,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                        } else {
+                          plantImage = Container(
+                            height: 130,
+                            color: Colors.grey.shade200,
+                            child: const Icon(
+                              Icons.local_florist,
+                              size: 40,
+                              color: Colors.green,
                             ),
                           );
-                        }).toList(),
-                  ),
+                        }
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: black.withOpacity(0.06),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                                child: plantImage,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      plant['name'] ?? 'Unknown',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.grass,
+                                          size: 16,
+                                          color: Colors.grey,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            plant['watering'] ?? 'N/A',
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.wb_sunny_outlined,
+                                          size: 16,
+                                          color: Colors.grey,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            plant['temperature'] ?? 'N/A',
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
             ],
           ),
         ),

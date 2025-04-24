@@ -26,9 +26,8 @@ class PopularSection extends StatelessWidget {
                 'assets/icons/more.png',
                 color: green,
                 height: 20,
-                errorBuilder:
-                    (context, error, stackTrace) =>
-                        const Icon(Icons.more_horiz, color: green),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.more_horiz, color: green),
               ),
             ],
           ),
@@ -79,28 +78,27 @@ class PopularSection extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child:
-                            imageBase64 != null && imageBase64.isNotEmpty
-                                ? Image.memory(
-                                  base64Decode(imageBase64),
+                        child: imageBase64 != null && imageBase64.isNotEmpty
+                            ? Image.memory(
+                                base64Decode(imageBase64),
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                plant['image'] ??
+                                    'assets/images/default_image.png',
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
                                   width: 50,
                                   height: 50,
-                                  fit: BoxFit.cover,
-                                )
-                                : Image.asset(
-                                  plant['image'] ??
-                                      'assets/images/default_image.png',
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder:
-                                      (context, error, stackTrace) => Container(
-                                        width: 50,
-                                        height: 50,
-                                        color: Colors.green.shade100,
-                                        child: const Icon(Icons.local_florist),
-                                      ),
+                                  color: Colors.green.shade100,
+                                  child: const Icon(Icons.local_florist),
                                 ),
+                              ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
@@ -120,12 +118,12 @@ class PopularSection extends StatelessWidget {
                           'assets/icons/add.png',
                           color: white,
                           height: 13,
-                          errorBuilder:
-                              (context, error, stackTrace) => const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 13,
-                              ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 13,
+                          ),
                         ),
                       ),
                     ],

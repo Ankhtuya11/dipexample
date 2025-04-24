@@ -46,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => isLoading = true);
 
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/register/'),
+      Uri.parse('http://192.168.0.242:8000/api/register/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': usernameController.text,
@@ -121,31 +121,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 24),
-
                       _buildInputField(
                         controller: usernameController,
                         icon: Icons.person,
                         hintText: 'Full Name',
                       ),
-
                       _buildInputField(
                         controller: emailController,
                         icon: Icons.email,
                         hintText: 'Email',
-                        suffixIcon:
-                            emailController.text.isEmpty
-                                ? null
-                                : isEmailValid
+                        suffixIcon: emailController.text.isEmpty
+                            ? null
+                            : isEmailValid
                                 ? const Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                )
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                  )
                                 : const Icon(
-                                  Icons.error_outline,
-                                  color: Colors.red,
-                                ),
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                  ),
                       ),
-
                       _buildInputField(
                         controller: passwordController,
                         icon: Icons.lock,
@@ -164,16 +160,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                       ),
-
                       _buildInputField(
                         controller: confirmPasswordController,
                         icon: Icons.lock_outline,
                         hintText: 'Confirm Password',
                         obscureText: true,
                       ),
-
                       const SizedBox(height: 12),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -196,9 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 16),
-
                       SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -210,20 +201,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child:
-                              isLoading
-                                  ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
-                                  : const Text(
-                                    'Login',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
+                          child: isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : const Text(
+                                  'Login',
+                                  style: TextStyle(fontSize: 18),
+                                ),
                         ),
                       ),
-
                       const SizedBox(height: 24),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class CategoryService {
   static const String apiUrl =
-      'http://127.0.0.1:8000/api/categories/'; // Replace with your actual API URL
+      'http://192.168.0.242:8000/api/categories/'; // Replace with your actual API URL
 
   static Future<List<Map<String, dynamic>>> fetchCategories() async {
     final response = await http.get(Uri.parse(apiUrl));
