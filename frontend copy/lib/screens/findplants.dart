@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../constants.dart'; // make sure white, black, green are defined
+import 'camera_screen.dart';
 
 class FindPlantsPage extends StatefulWidget {
   const FindPlantsPage({super.key});
@@ -62,7 +64,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                   Expanded(
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: 'Search',
+                        hintText: 'Хайх',
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding: const EdgeInsets.symmetric(
@@ -89,10 +91,15 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                       ),
                     ),
                     onPressed: () {
-                      // TODO: Add identify logic
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CameraScreen(),
+                        ),
+                      );
                     },
                     icon: const Icon(Icons.camera_alt, size: 20),
-                    label: const Text("Identify"),
+                    label: const Text("Тодорхойлох"),
                   ),
                 ],
               ),
@@ -111,7 +118,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Plant Finder\nChoose the perfect plants for you!',
+                        'Ургамлын хайлт\nӨөрт тохирох ургамлыг сонгоно уу!',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -125,7 +132,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
 
               const SizedBox(height: 24),
               Text(
-                'Home Greenery',
+                'Гэрийн ногоон',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -160,7 +167,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
 
               const SizedBox(height: 30),
               Text(
-                'April Plant Picks',
+                '4-р сарын ургамал',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
