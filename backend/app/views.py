@@ -17,6 +17,10 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return response
+
 class PlantInfoCreateView(generics.CreateAPIView):
     queryset = PlantInfo.objects.all()
     serializer_class = PlantInfoSerializer

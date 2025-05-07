@@ -55,7 +55,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'password2': confirmPasswordController.text,
       }),
     );
-
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
     setState(() => isLoading = false);
 
     if (response.statusCode == 200 || response.statusCode == 201) {

@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 import '../constants.dart'; // make sure white, black, green are defined
 import 'camera_screen.dart';
 import 'plant_detail_screen.dart';
+import 'better_sleep.dart';
+import 'air_purifying.dart';
+import 'shade_loving.dart';
 
 class FindPlantsPage extends StatefulWidget {
   const FindPlantsPage({super.key});
@@ -156,19 +159,49 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                             const SizedBox(width: 30), // Spacing between items
                         itemBuilder: (_, index) {
                           final item = categories[index];
-                          return Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 50, // Your requested size
-                                backgroundImage: AssetImage(item['image']!),
-                                backgroundColor: Colors.grey.shade200,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                item['label']!,
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                            ],
+                          return GestureDetector(
+                            onTap: () {
+                              // Navigate to the respective page based on the label
+                              if (item['label'] == 'Better Sleep') {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const BetterSleepScreen(),
+                                  ),
+                                );
+                              } else if (item['label'] == 'Air-Purifying') {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AirPurifyingPage(),
+                                  ),
+                                );
+                              } else if (item['label'] == 'Shade-Loving') {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ShadeLovingPage(),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  radius: 50, // Your requested size
+                                  backgroundImage: AssetImage(item['image']!),
+                                  backgroundColor: Colors.grey.shade200,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  item['label']!,
+                                  style: const TextStyle(fontSize: 15),
+                                ),
+                              ],
+                            ),
                           );
                         },
                       ),
