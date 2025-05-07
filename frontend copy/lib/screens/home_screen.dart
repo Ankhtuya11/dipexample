@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../constants.dart';
-import '../components/search_bar.dart';
 import '../components/category_tabs.dart';
 import '../components/featured_slider.dart';
 import '../components/popular_section.dart';
@@ -56,7 +55,7 @@ class _HomePageState extends State<HomePage> {
 
   static Future<List<Map<String, dynamic>>> fetchCategories() async {
     final response = await http.get(
-      Uri.parse('http://192.168.0.242:8000/api/categories/'),
+      Uri.parse('http://127.0.0.1:8000/api/categories/'),
     );
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -72,7 +71,7 @@ class _HomePageState extends State<HomePage> {
 
   static Future<List<Map<String, dynamic>>> fetchPlants() async {
     final response = await http.get(
-      Uri.parse('http://192.168.0.242:8000/api/plants/'),
+      Uri.parse('http://127.0.0.1:8000/api/plants/'),
     );
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -133,7 +132,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SearchBarComponent(),
             const SizedBox(height: 20),
 
             // Category Tabs

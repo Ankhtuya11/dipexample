@@ -5,25 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="224801a9-a4bb-44d9-b640-0f0422711790" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/backend/backend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/backend/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/backend/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/android/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/components/popular_section.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/components/popular_section.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/screens/add_plant_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/screens/add_plant_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/screens/findplants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/screens/findplants.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend copy/lib/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/screens/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/screens/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/screens/my_plants_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/screens/my_plants_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/screens/plant_detail_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/screens/plant_detail_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/screens/plant_detail_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/screens/plant_detail_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/screens/register_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/screens/register_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/lib/services.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/services.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend copy/lib/widgets/animated_navbar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/lib/widgets/animated_navbar.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/linux/flutter/generated_plugins.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend copy/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/frontend copy/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

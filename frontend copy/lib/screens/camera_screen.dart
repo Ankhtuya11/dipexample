@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
+import '../config/api_config.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -23,10 +24,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Map<String, dynamic>? _plantInfo;
   CameraController? _controller;
   List<CameraDescription>? _cameras;
-
-  // Replace with your Google Cloud Vision API key
-  final String _apiKey = 'AIzaSyBZvkxeGrcRQxcV58TLjn56UDbBhz4g088';
-  final String _visionApiUrl = 'https://vision.googleapis.com/v1/images:annotate';
 
   @override
   void initState() {
@@ -193,11 +190,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     });
 
     try {
-      // Convert image to base64
       final bytes = await _image!.readAsBytes();
       final base64Image = base64Encode(bytes);
 
-      // Prepare request body
       final requestBody = {
         'requests': [
           {
@@ -207,20 +202,23 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             'features': [
               {
                 'type': 'LABEL_DETECTION',
-                'maxResults': 5,
+                'maxResults': 10,
               },
               {
                 'type': 'WEB_DETECTION',
-                'maxResults': 5,
+                'maxResults': 10,
               },
+              {
+                'type': 'OBJECT_LOCALIZATION',
+                'maxResults': 5,
+              }
             ],
           },
         ],
       };
 
-      // Make API request
       final response = await http.post(
-        Uri.parse('$_visionApiUrl?key=$_apiKey'),
+        Uri.parse('${ApiConfig.visionApiUrl}?key=${ApiConfig.googleVisionApiKey}'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
@@ -229,15 +227,20 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         final data = jsonDecode(response.body);
         final labels = data['responses'][0]['labelAnnotations'] as List;
         final webDetection = data['responses'][0]['webDetection'];
+        final objects = data['responses'][0]['localizedObjectAnnotations'] as List?;
 
-        // Process and filter plant-related labels
+        // Enhanced plant detection logic
         final plantLabels = labels.where((label) {
           final description = label['description'].toString().toLowerCase();
           return description.contains('plant') ||
               description.contains('flower') ||
               description.contains('tree') ||
               description.contains('leaf') ||
-              description.contains('garden');
+              description.contains('garden') ||
+              description.contains('flora') ||
+              description.contains('vegetation') ||
+              description.contains('herb') ||
+              description.contains('shrub');
         }).toList();
 
         if (plantLabels.isNotEmpty) {
@@ -253,22 +256,26 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                     'name': entity['description'],
                     'score': entity['score'],
                   }).toList(),
+              'objects': objects?.map((obj) => {
+                    'name': obj['name'],
+                    'confidence': obj['score'],
+                  }).toList(),
             };
           });
         } else {
           setState(() {
-            _error = 'Ургамал тодорхойлогдоогүй байна';
+            _error = 'Ургамал тодорхойлогдоогүй байна. Зураг тодорхой байгаа эсэхийг шалгана уу.';
           });
         }
       } else {
         setState(() {
-          _error = 'Ургамал тодорхойлоход алдаа гарлаа';
+          _error = 'Ургамал тодорхойлоход алдаа гарлаа. Дараа дахин оролдоно уу.';
         });
       }
     } catch (e) {
       print('Error identifying plant: $e');
       setState(() {
-        _error = 'Ургамал тодорхойлоход алдаа гарлаа';
+        _error = 'Ургамал тодорхойлоход алдаа гарлаа. Дараа дахин оролдоно уу.';
       });
     } finally {
       setState(() {
