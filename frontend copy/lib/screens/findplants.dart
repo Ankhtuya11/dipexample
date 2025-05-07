@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../constants.dart'; // make sure white, black, green are defined
 import 'camera_screen.dart';
+import 'plant_detail_screen.dart';
 
 class FindPlantsPage extends StatefulWidget {
   const FindPlantsPage({super.key});
@@ -43,9 +44,9 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
   }
 
   final List<Map<String, String>> categories = [
-    {'label': 'Better Sleep', 'image': 'assets/images/bed.jpeg'},
-    {'label': 'Air-Purifying', 'image': 'assets/images/air.jpeg'},
-    {'label': 'Shade-Loving', 'image': 'assets/images/shade.jpeg'},
+    {'label': 'Better Sleep', 'image': 'assets/images/bed.jpg'},
+    {'label': 'Air-Purifying', 'image': 'assets/images/air.jpg'},
+    {'label': 'Shade-Loving', 'image': 'assets/images/shade.jpg'},
   ];
 
   @override
@@ -130,54 +131,68 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                 ),
               ),
 
-              const SizedBox(height: 24),
-              Text(
-                'Гэрийн ногоон',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-
-              SizedBox(
-                height: 100,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 18),
-                  itemBuilder: (_, index) {
-                    final item = categories[index];
-                    return Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 35,
-                          backgroundImage: AssetImage(item['image']!),
-                          backgroundColor: Colors.grey.shade200,
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          item['label']!,
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ],
-                    );
-                  },
+              Padding(
+                padding: const EdgeInsets.all(16), // бүх талаас 16 пиксел
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 24),
+                    Text(
+                      'Гэрийн ногоон',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height:
+                          150, // Increased to fit larger CircleAvatar + text
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30), // Equal padding both sides
+                        itemCount: categories.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(width: 30), // Spacing between items
+                        itemBuilder: (_, index) {
+                          final item = categories[index];
+                          return Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 50, // Your requested size
+                                backgroundImage: AssetImage(item['image']!),
+                                backgroundColor: Colors.grey.shade200,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                item['label']!,
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              const SizedBox(height: 30),
-              Text(
-                '4-р сарын ургамал',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-
               isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : Column(
-                      children: picks.map((plant) {
+                  : GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: picks.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, // хоёр багана
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio:
+                            0.75, // зургийн өндөр, өргөний харьцаа
+                      ),
+                      itemBuilder: (context, index) {
+                        final plant = picks[index];
                         String? base64Image = plant['image_base64'];
                         Widget plantImage;
 
@@ -217,7 +232,6 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                         }
 
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 20),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: white,
@@ -239,53 +253,45 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                                 child: plantImage,
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(12),
+                                padding: const EdgeInsets.all(8),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       plant['name'] ?? 'Unknown',
                                       style: const TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        const Icon(
-                                          Icons.grass,
-                                          size: 16,
-                                          color: Colors.grey,
-                                        ),
-                                        const SizedBox(width: 6),
+                                        const Icon(Icons.grass,
+                                            size: 14, color: Colors.grey),
+                                        const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
                                             plant['watering'] ?? 'N/A',
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                            ),
+                                            style:
+                                                const TextStyle(fontSize: 12),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        const Icon(
-                                          Icons.wb_sunny_outlined,
-                                          size: 16,
-                                          color: Colors.grey,
-                                        ),
-                                        const SizedBox(width: 6),
+                                        const Icon(Icons.wb_sunny_outlined,
+                                            size: 14, color: Colors.grey),
+                                        const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
                                             plant['temperature'] ?? 'N/A',
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                            ),
+                                            style:
+                                                const TextStyle(fontSize: 12),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -297,7 +303,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                             ],
                           ),
                         );
-                      }).toList(),
+                      },
                     ),
             ],
           ),

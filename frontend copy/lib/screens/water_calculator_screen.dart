@@ -75,7 +75,7 @@ class _WaterCalculatorScreenState extends State<WaterCalculatorScreen> {
 
     double potSize = double.tryParse(_potSizeController.text) ?? 0;
     var plantInfo = _plantTypes[_selectedPlantType]!;
-    
+
     double waterAmount = potSize * plantInfo['waterRatio'];
     String frequency = plantInfo['frequency'];
 
@@ -139,7 +139,7 @@ class _WaterCalculatorScreenState extends State<WaterCalculatorScreen> {
             TextField(
               controller: _potSizeController,
               decoration: InputDecoration(
-                labelText: 'Савны хэмжээ (инч)',
+                labelText: 'Савны хэмжээ (см)', // Changed from inch to cm
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -241,7 +241,8 @@ class _WaterCalculatorScreenState extends State<WaterCalculatorScreen> {
                   const SizedBox(height: 12),
                   _buildTip('Услахаас өмнө хөрсний чийгшилийг шалгана уу'),
                   _buildTip('Өглөөний цагт услах нь хамгийн сайн'),
-                  _buildTip('Улирлын болон агаарын чийгшилд тохируулан услана уу'),
+                  _buildTip(
+                      'Улирлын болон агаарын чийгшилд тохируулан услана уу'),
                   _buildTip('Өрөөний температуртай ус ашиглана уу'),
                 ],
               ),
@@ -272,4 +273,4 @@ class _WaterCalculatorScreenState extends State<WaterCalculatorScreen> {
       ),
     );
   }
-} 
+}
