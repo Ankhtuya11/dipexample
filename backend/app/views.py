@@ -12,6 +12,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.views import APIView
 import json 
+from openai import OpenAI
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [AllowAny]
@@ -119,40 +120,34 @@ class PlantHealthAssessmentView(APIView):
 
         # Compose question for ChatGPT
         user_prompt = (
-            f"Энэ бол миний ургамлын талаарх мэдээлэл: {result.get('description', '')}. "
+            f"Энэ бол миний ургамлын талаарх мэдээлэл: {result}. "
             f"Ургамлыг хэрхэн арчлах талаар надад зөвлөгөө өгөөч."
         )
+        print(user_prompt)
+        base_url = "https://api.aimlapi.com/v1"
 
+# Insert your AIML API key in the quotation marks instead of <YOUR_AIMLAPI_KEY>:
+        api_key = "8e0a803baf0744feb4ab81cbdc96e09f" 
+        system_prompt = "You are a assistant agent. Be descriptive and helpful."
         # ChatGPT API Call
+   
         try:
-            conn = http.client.HTTPSConnection("chatgpt-42.p.rapidapi.com")
+            api = OpenAI(api_key=api_key, base_url=base_url)
+            completion = api.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.7,
+            max_tokens=256,
+    )
 
-            payload = json.dumps({
-                "messages": [{"role": "user", "content": 'based on this information can you give me some advice on how to take care of my plant? in mongolian{user_prompt}'}],
-                "web_access": False
-            })
+            response = completion.choices[0].message.content
 
-            headers = {
-                'x-rapidapi-key': "fcced1c658mshf69f17cc85ef827p175afbjsn61ed07a82da2",
-                'x-rapidapi-host': "chatgpt-42.p.rapidapi.com",
-                'Content-Type': "application/json"
-            }
-
-            conn.request("POST", "/deepseekai", payload, headers)
-            res = conn.getresponse()
-            data = res.read().decode("utf-8")
-            advice_response = json.loads(data)
-
-            # Extract ChatGPT reply
-            chatgpt_reply = advice_response.get("choices", [{}])[0].get("message", {}).get("content", "")
-
-            # Combine plant assessment with AI advice
-            combined_result = {
-                "health_result": result,
-                "care_advice_mn": chatgpt_reply
-            }
-
-            return Response(combined_result, status=status.HTTP_200_OK)
+            print("User:", user_prompt)
+            print("AI:", response)
+            return Response(response, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response(

@@ -15,7 +15,8 @@ class CameraScreen extends StatefulWidget {
   _CameraScreenState createState() => _CameraScreenState();
 }
 
-class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
+class _CameraScreenState extends State<CameraScreen>
+    with WidgetsBindingObserver {
   CameraController? _controller;
   List<CameraDescription> cameras = [];
   bool _isCameraInitialized = false;
@@ -44,7 +45,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
       _controller?.dispose();
     } else if (state == AppLifecycleState.resumed) {
       _initializeCamera();
@@ -137,16 +139,18 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Future<void> _assessPlantHealth(String base64Image) async {
     try {
       const apiUrl = 'http://127.0.0.1:8000/api/assess-health/';
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'image': base64Image}),
-      ).timeout(const Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse(apiUrl),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'image': base64Image}),
+          )
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        final responseData = jsonDecode(utf8.decode(response.bodyBytes));
         setState(() {
-          _assessmentResult = responseData['result'] ?? responseData.toString();
+          _assessmentResult = responseData;
           _isLoading = false;
         });
       } else {
@@ -262,7 +266,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _isLoading ? null : () => _getImage(ImageSource.camera),
+                        onPressed: _isLoading
+                            ? null
+                            : () => _getImage(ImageSource.camera),
                         icon: const Icon(Icons.camera_alt),
                         label: const Text("Take Photo"),
                         style: ElevatedButton.styleFrom(
@@ -285,7 +291,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _isLoading ? null : () => _getImage(ImageSource.gallery),
+                        onPressed: _isLoading
+                            ? null
+                            : () => _getImage(ImageSource.gallery),
                         icon: const Icon(Icons.photo_library_outlined),
                         label: const Text("Choose Image"),
                         style: ElevatedButton.styleFrom(
