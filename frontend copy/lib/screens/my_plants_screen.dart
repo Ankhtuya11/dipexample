@@ -27,7 +27,7 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
       return;
     }
 
-    final url = Uri.parse('http://192.168.0.242:8000/api/user/my_plants/');
+    final url = Uri.parse('http://127.0.0.1:8000/api/user/my_plants/');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $token'},

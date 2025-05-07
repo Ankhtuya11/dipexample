@@ -1,6 +1,8 @@
+import http
 from rest_framework import viewsets, permissions
 from .models import PlantInfo, UserPlant, Category
 from .serializers import *
+from .services import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .serializers import RegisterSerializer
@@ -9,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.views import APIView
+import json 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [AllowAny]
@@ -89,3 +92,66 @@ class UserPlantsListView(APIView):
         user_plants = UserPlant.objects.filter(user=request.user)
         serializer = UserPlantDetailSerializer(user_plants, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PlantHealthAssessmentView(APIView):
+    def post(self, request):
+        """
+        Assess plant health from base64 encoded image,
+        then ask ChatGPT for plant care advice in Mongolian.
+        """
+        image_base64 = request.data.get('image')
+
+        if not image_base64:
+            return Response(
+                {'error': 'Image data is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        result = PlantHealthService.assess_plant_health(image_base64)
+
+        if result['status'] == 'error':
+            return Response(result, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Compose question for ChatGPT
+        user_prompt = (
+            f"Энэ бол миний ургамлын талаарх мэдээлэл: {result.get('description', '')}. "
+            f"Ургамлыг хэрхэн арчлах талаар надад зөвлөгөө өгөөч."
+        )
+
+        # ChatGPT API Call
+        try:
+            conn = http.client.HTTPSConnection("chatgpt-42.p.rapidapi.com")
+
+            payload = json.dumps({
+                "messages": [{"role": "user", "content": 'based on this information can you give me some advice on how to take care of my plant? in mongolian{user_prompt}'}],
+                "web_access": False
+            })
+
+            headers = {
+                'x-rapidapi-key': "fcced1c658mshf69f17cc85ef827p175afbjsn61ed07a82da2",
+                'x-rapidapi-host': "chatgpt-42.p.rapidapi.com",
+                'Content-Type': "application/json"
+            }
+
+            conn.request("POST", "/deepseekai", payload, headers)
+            res = conn.getresponse()
+            data = res.read().decode("utf-8")
+            advice_response = json.loads(data)
+
+            # Extract ChatGPT reply
+            chatgpt_reply = advice_response.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+            # Combine plant assessment with AI advice
+            combined_result = {
+                "health_result": result,
+                "care_advice_mn": chatgpt_reply
+            }
+
+            return Response(combined_result, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {'error': f'Failed to get care advice: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

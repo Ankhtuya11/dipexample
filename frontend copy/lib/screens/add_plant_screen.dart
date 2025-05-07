@@ -29,7 +29,7 @@ class _AddPlantPageState extends State<AddPlantPage> {
   }
 
   Future<void> fetchPlants() async {
-    final url = Uri.parse("http://192.168.0.242:8000/api/plants/");
+    final url = Uri.parse("http://127.0.0.1:8000/api/plants/");
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -78,7 +78,7 @@ class _AddPlantPageState extends State<AddPlantPage> {
       return;
     }
 
-    final url = Uri.parse("http://192.168.0.242:8000/api/user/add_plant/");
+    final url = Uri.parse("http://127.0.0.1:8000/api/user/add_plant/");
     final response = await http.post(
       url,
       headers: {

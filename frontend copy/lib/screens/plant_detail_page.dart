@@ -23,7 +23,7 @@ class _PlantDetailPageState extends State<PlantDetailPage> {
 
   Future<void> fetchPlant() async {
     final url = Uri.parse(
-      'http://192.168.0.242:8000/api/plants/${widget.plantId}/',
+      'http://127.0.0.1:8000/api/plants/${widget.plantId}/',
     );
     try {
       final response = await http.get(url);

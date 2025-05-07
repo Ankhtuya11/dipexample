@@ -43,7 +43,7 @@ class _PlantDetailScreenState extends State<PlantDetailScreen> {
       }
 
       final url = Uri.parse(
-          'http:/192.168.0.242:8000/api/plants/user/plant/${widget.plantId}/');
+          'http:/127.0.0.1:8000/api/plants/user/plant/${widget.plantId}/');
       print('Fetching plant details from: $url'); // Debug print
 
       final response = await http.get(

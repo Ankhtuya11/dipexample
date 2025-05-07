@@ -46,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => isLoading = true);
 
     final response = await http.post(
-      Uri.parse('http://192.168.0.242:8000/api/register/'),
+      Uri.parse('http://127.0.0.1:8000/api/register/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': usernameController.text,

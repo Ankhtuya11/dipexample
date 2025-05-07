@@ -25,7 +25,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
   Future<void> fetchPlantPicks() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.0.242:8000/api/plants/'),
+        Uri.parse('http://127.0.0.1:8000/api/plants/'),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));

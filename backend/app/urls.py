@@ -17,4 +17,5 @@ urlpatterns = [
     path('category/<int:category_id>/', PlantsByCategoryAPIView.as_view(), name='plants-by-category'),
     path('user/add_plant/', UserAddPlantView.as_view(), name='user-add-plant'),
     path('user/my_plants/', UserPlantsListView.as_view(), name='user-my-plants'),
+    path('assess-health/', PlantHealthAssessmentView.as_view(), name='plant-health-assessment'),
 ]
