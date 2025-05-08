@@ -110,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Register',
+                        'Бүртгүүлэх',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -118,19 +118,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const Text(
-                        'Create your new account',
+                        'Таны шинэ аккаунтыг үүсгээрэй',
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 24),
                       _buildInputField(
                         controller: usernameController,
                         icon: Icons.person,
-                        hintText: 'Full Name',
+                        hintText: 'Нэр',
                       ),
                       _buildInputField(
                         controller: emailController,
                         icon: Icons.email,
-                        hintText: 'Email',
+                        hintText: 'Имэйл хаяг',
                         suffixIcon: emailController.text.isEmpty
                             ? null
                             : isEmailValid
@@ -146,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       _buildInputField(
                         controller: passwordController,
                         icon: Icons.lock,
-                        hintText: 'Password',
+                        hintText: 'Нууц үг',
                         obscureText: obscurePassword,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -164,31 +164,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       _buildInputField(
                         controller: confirmPasswordController,
                         icon: Icons.lock_outline,
-                        hintText: 'Confirm Password',
+                        hintText: 'Нууц үгээ баталгаажуулах',
                         obscureText: true,
                       ),
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: rememberMe,
-                                onChanged: (val) {
-                                  setState(() => rememberMe = val ?? false);
-                                },
-                              ),
-                              const Text('Remember Me'),
-                            ],
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/forgot-password');
-                            },
-                            child: const Text('Forgot password ?'),
-                          ),
-                        ],
+                        children: [],
                       ),
                       const SizedBox(height: 16),
                       SizedBox(
@@ -207,7 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   color: Colors.white,
                                 )
                               : const Text(
-                                  'Login',
+                                  'Бүртгүүлэх',
                                   style: TextStyle(fontSize: 18),
                                 ),
                         ),
@@ -216,13 +198,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Already have an account? "),
+                          const Text("Аккаунттай юу? "),
                           GestureDetector(
                             onTap: () {
                               Navigator.pushReplacementNamed(context, '/login');
                             },
                             child: const Text(
-                              "Sign up",
+                              "Нэвтрэх",
                               style: TextStyle(
                                 color: Colors.green,
                                 fontWeight: FontWeight.bold,

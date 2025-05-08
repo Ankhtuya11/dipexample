@@ -74,7 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             // 🔐 Login form starts after wave
-            // 🔐 Login form starts after wave
             Container(
               margin: const EdgeInsets.only(top: 270), // 👈 moved a bit up
               padding: const EdgeInsets.fromLTRB(
@@ -88,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Welcome Back',
+                    'Сайн уу?',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -97,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Login to your account',
+                    'Таны аккаунт руу нэвтрэх',
                     style: TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                   const SizedBox(height: 20), // 👈 reduce this too if needed
@@ -105,14 +104,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildInputField(
                     controller: usernameController,
                     icon: Icons.person,
-                    hintText: 'Full Name',
+                    hintText: 'Нэр',
                   ),
 
                   // ... (rest same)
                   _buildInputField(
                     controller: passwordController,
                     icon: Icons.lock,
-                    hintText: 'Password',
+                    hintText: 'Нууц үг',
                     obscureText: obscurePassword,
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -141,14 +140,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               setState(() => rememberMe = val ?? false);
                             },
                           ),
-                          const Text('Remember Me'),
+                          const Text('Намайг санах'),
                         ],
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/forgot-password');
-                        },
-                        child: const Text('Forgot password?'),
                       ),
                     ],
                   ),
@@ -171,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.white,
                             )
                           : const Text(
-                              'Login',
+                              'Нэвтрэх',
                               style: TextStyle(fontSize: 18),
                             ),
                     ),
@@ -182,13 +175,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Don’t have an account? "),
+                      const Text("Аккаунтгүй юу? "),
                       GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(context, '/register');
                         },
                         child: const Text(
-                          "Sign up",
+                          "Бүртгүүлэх",
                           style: TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.bold,

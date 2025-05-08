@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:light/light.dart';
 
 class LightMeterScreen extends StatefulWidget {
   const LightMeterScreen({super.key});
@@ -8,237 +13,167 @@ class LightMeterScreen extends StatefulWidget {
 }
 
 class _LightMeterScreenState extends State<LightMeterScreen> {
-  double _lightLevel = 0.5; // 0.0 to 1.0
-  String _lightCondition = 'Дундаж';
+  CameraController? _cameraController;
+  bool _isCameraInitialized = false;
+  double _lux = 0;
+  String _lightDescription = 'Loading...';
+  StreamSubscription<int>? _lightSubscription;
 
-  void _updateLightLevel(double value) {
-    setState(() {
-      _lightLevel = value;
-      if (value < 0.3) {
-        _lightCondition = 'Бага';
-      } else if (value < 0.7) {
-        _lightCondition = 'Дундаж';
-      } else {
-        _lightCondition = 'Их';
-      }
+  @override
+  void initState() {
+    super.initState();
+    if (!kIsWeb && Platform.isAndroid) {
+      _initializeCamera();
+      _startLightSensor();
+    } else {
+      setState(() {
+        _lightDescription = 'Not supported on Web';
+        _lux = 0;
+      });
+    }
+  }
+
+  Future<void> _initializeCamera() async {
+    try {
+      final cameras = await availableCameras();
+      final camera = cameras.firstWhere(
+        (cam) => cam.lensDirection == CameraLensDirection.back,
+        orElse: () => cameras.first,
+      );
+      _cameraController = CameraController(camera, ResolutionPreset.medium);
+      await _cameraController!.initialize();
+      setState(() {
+        _isCameraInitialized = true;
+      });
+    } catch (e) {
+      print('Camera error: $e');
+    }
+  }
+
+  void _startLightSensor() {
+    final light = Light();
+    _lightSubscription = light.lightSensorStream.listen((luxValue) {
+      setState(() {
+        _lux = luxValue.toDouble();
+        _lightDescription = _getLightCondition(_lux);
+      });
+    }, onError: (err) {
+      print('Light sensor error: $err');
     });
+  }
+
+  String _getLightCondition(double lux) {
+    if (lux < 100) {
+      return 'Dark\nLow light';
+    } else if (lux < 1000) {
+      return 'Indirect sunlight\nBright, no direct sun';
+    } else {
+      return 'Full Sun\nDirect sunlight';
+    }
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose();
+    _lightSubscription?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final hasTwoLines = _lightDescription.contains('\n');
+    final title =
+        hasTwoLines ? _lightDescription.split('\n')[0] : _lightDescription;
+    final subtitle = hasTwoLines ? _lightDescription.split('\n')[1] : '';
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Гэрлийн хэмжигч',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 20,
-            color: Colors.black87,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.orange.shade100),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Гэрлийн түвшинг хэмжих',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Ургамлын одоогийн гэрлийн нөхцөлд тохируулахын тулд гүйлгэгчийг тохируулна уу.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-            Center(
-              child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.orange.shade50,
-                  border: Border.all(color: Colors.orange.shade100),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.wb_sunny,
-                        size: 64,
-                        color: Colors.orange.shade400,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _lightCondition,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.orange.shade700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'Гэрлийн түвшин',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
               ),
             ),
             const SizedBox(height: 8),
-            Slider(
-              value: _lightLevel,
-              onChanged: _updateLightLevel,
-              activeColor: Colors.orange.shade400,
-              inactiveColor: Colors.orange.shade100,
-            ),
+            kIsWeb
+                ? const Icon(Icons.cloud_off, size: 100, color: Colors.grey)
+                : (_isCameraInitialized
+                    ? ClipOval(
+                        child: SizedBox(
+                          width: 200,
+                          height: 200,
+                          child: CameraPreview(_cameraController!),
+                        ),
+                      )
+                    : const CircularProgressIndicator()),
             const SizedBox(height: 24),
+            Text(
+              'Light Level: ${_lux.toStringAsFixed(0)} lux',
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              margin: const EdgeInsets.symmetric(horizontal: 48),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Ургамлын төрлөөр гэрлийн шаардлага',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildPlantType(
-                    'Бага гэрэлтэй ургамал',
-                    'Могой ургамал, ZZ ургамал, Потос, Филодендрон, Сансевиерия',
-                  ),
-                  _buildPlantType(
-                    'Дундаж гэрэлтэй ургамал',
-                    'Монстера, Филодендрон, Энхтайвны лили, Аглаонема, Калатея',
-                  ),
-                  _buildPlantType(
-                    'Их гэрэлтэй ургамал',
-                    'Кактус, Суккулент, Фикус, Алоэ, Хавортия',
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.shade100),
-              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Оновчтой гэрэлтэй байх зөвлөмж',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  _buildTip('Тэгш өсөлтийн тулд ургамлыг тогтмол эргүүлнэ'),
-                  _buildTip(
-                      'Ургамлыг шууд агааржуулагчийн урсгалаас хол байлгана'),
-                  _buildTip(
-                      'Гэрлийн шингээлтийг нэмэгдүүлэхийн тулд навчийг цэвэрлэнэ'),
-                  _buildTip(
-                      'Хүчтэй нарны гэрлийг шүүхийн тулд нимгэн хөшиг ашиглана'),
+                  if (subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ]
                 ],
+              ),
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Go Back',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPlantType(String title, String examples) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            examples,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTip(String tip) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(Icons.check_circle, size: 16, color: Colors.orange.shade400),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              tip,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade700,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

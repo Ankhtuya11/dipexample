@@ -54,31 +54,17 @@ class FeaturedSlider extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(28),
-                    child:
-                        imageBase64 != null && imageBase64.isNotEmpty
-                            ? Image.memory(
-                              base64Decode(imageBase64), // Decode base64 image
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            )
-                            : Image.asset(
-                              'assets/images/default_image.png', // Default image if base64 is not available
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            ),
-                  ),
-                  Positioned(
-                    right: 12,
-                    top: 12,
-                    child: CircleAvatar(
-                      radius: 15,
-                      backgroundColor: green,
-                      child: Image.asset(
-                        'assets/icons/add.png',
-                        color: white,
-                        height: 15,
-                      ),
-                    ),
+                    child: imageBase64 != null && imageBase64.isNotEmpty
+                        ? Image.memory(
+                            base64Decode(imageBase64), // Decode base64 image
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          )
+                        : Image.asset(
+                            'assets/images/default_image.png', // Default image if base64 is not available
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
                   ),
                 ],
               ),

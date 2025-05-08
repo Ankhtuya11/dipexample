@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   int? selectedCategoryId;
   int activePage = 0;
 
-  final PageController controller = PageController(viewportFraction: 0.75);
+  final PageController controller = PageController(); // default
 
   List<Map<String, dynamic>> categories = [];
   List<Map<String, dynamic>> plants = [];
@@ -96,43 +96,13 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: white,
-        leading: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Image.asset(
-            'assets/icons/menu.png',
-            errorBuilder: (context, error, _) => const Icon(Icons.menu),
-          ),
-        ),
-        actions: [
-          Container(
-            height: 40,
-            width: 40,
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: green,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(color: green.withOpacity(0.4), blurRadius: 8),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'assets/images/pro.png',
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.person, color: Colors.white),
-              ),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 5),
 
             // Category Tabs
             if (categories.isEmpty)

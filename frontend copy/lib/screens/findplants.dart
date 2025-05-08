@@ -38,18 +38,18 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load plants');
+        throw Exception('Ургамлыг ачахад алдаа гарлаа');
       }
     } catch (e) {
-      print('Error: $e');
+      print('Алдаа: $e');
       setState(() => isLoading = false);
     }
   }
 
   final List<Map<String, String>> categories = [
-    {'label': 'Better Sleep', 'image': 'assets/images/bed.jpg'},
-    {'label': 'Air-Purifying', 'image': 'assets/images/air.jpg'},
-    {'label': 'Shade-Loving', 'image': 'assets/images/shade.jpg'},
+    {'label': 'Сайн нойр', 'image': 'assets/images/bed.jpg'},
+    {'label': 'Агаар цэвэршүүлэгч', 'image': 'assets/images/air.jpg'},
+    {'label': 'Сүүдэрт дуртай', 'image': 'assets/images/shade.jpg'},
   ];
 
   @override
@@ -62,7 +62,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Search + Identify
+              // Хайх + Тодорхойлох
               Row(
                 children: [
                   Expanded(
@@ -109,60 +109,37 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
               ),
               const SizedBox(height: 16),
 
-              // Plant Finder
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.travel_explore, color: Colors.teal),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Ургамлын хайлт\nӨөрт тохирох ургамлыг сонгоно уу!',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Icon(Icons.arrow_forward_ios, size: 16),
-                  ],
-                ),
-              ),
+              // Ургамлын ангилал
 
               Padding(
                 padding: const EdgeInsets.all(16), // бүх талаас 16 пиксел
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 10),
                     Text(
-                      'Гэрийн ногоон',
+                      'Санал болгох',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 19),
                     SizedBox(
                       height:
                           150, // Increased to fit larger CircleAvatar + text
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 30), // Equal padding both sides
+                            horizontal: 19), // Equal padding both sides
                         itemCount: categories.length,
                         separatorBuilder: (_, __) =>
-                            const SizedBox(width: 30), // Spacing between items
+                            const SizedBox(width: 23), // Spacing between items
                         itemBuilder: (_, index) {
                           final item = categories[index];
                           return GestureDetector(
                             onTap: () {
                               // Navigate to the respective page based on the label
-                              if (item['label'] == 'Better Sleep') {
+                              if (item['label'] == 'Сайн нойр') {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -170,7 +147,8 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                                         const BetterSleepScreen(),
                                   ),
                                 );
-                              } else if (item['label'] == 'Air-Purifying') {
+                              } else if (item['label'] ==
+                                  'Агаар цэвэршүүлэгч') {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -178,7 +156,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                                         const AirPurifyingPage(),
                                   ),
                                 );
-                              } else if (item['label'] == 'Shade-Loving') {
+                              } else if (item['label'] == 'Сүүдэрт дуртай') {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -189,6 +167,8 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                               }
                             },
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment
+                                  .center, // Centering the content
                               children: [
                                 CircleAvatar(
                                   radius: 50, // Your requested size
@@ -291,7 +271,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      plant['name'] ?? 'Unknown',
+                                      plant['name'] ?? 'Мэдэгдэхгүй',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
@@ -306,7 +286,7 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
-                                            plant['watering'] ?? 'N/A',
+                                            plant['watering'] ?? 'Мэдэгдэхгүй',
                                             style:
                                                 const TextStyle(fontSize: 12),
                                             overflow: TextOverflow.ellipsis,
@@ -322,7 +302,8 @@ class _FindPlantsPageState extends State<FindPlantsPage> {
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
-                                            plant['temperature'] ?? 'N/A',
+                                            plant['temperature'] ??
+                                                'Мэдэгдэхгүй',
                                             style:
                                                 const TextStyle(fontSize: 12),
                                             overflow: TextOverflow.ellipsis,

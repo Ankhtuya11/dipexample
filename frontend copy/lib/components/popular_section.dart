@@ -22,13 +22,6 @@ class PopularSection extends StatelessWidget {
                 'Алдартай',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-              Image.asset(
-                'assets/icons/more.png',
-                color: green,
-                height: 20,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.more_horiz, color: green),
-              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -115,7 +108,7 @@ class PopularSection extends StatelessWidget {
                         radius: 13,
                         backgroundColor: green,
                         child: Image.asset(
-                          'assets/icons/add.png',
+                          'assets/icons/more.png',
                           color: white,
                           height: 13,
                           errorBuilder: (context, error, stackTrace) =>
